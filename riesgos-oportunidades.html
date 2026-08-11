@@ -16,6 +16,7 @@
   .mono{font-family:'JetBrains Mono',monospace;}
   header{background:var(--teal); color:#fff; padding:20px 24px;}
   .header-inner{max-width:1040px; margin:0 auto; display:flex; align-items:center; gap:14px;}
+  .header-logo{height:26px; width:auto;}
   .back{color:#fff; opacity:.8; text-decoration:none; font-size:13px;}
   .back:hover{opacity:1;}
   h1{margin:0; font-size:18px; font-weight:600;}
@@ -92,6 +93,7 @@
 
 <header>
   <div class="header-inner">
+    <img src="logo-senercom.png" alt="Senercom" class="header-logo">
     <a class="back" href="index.html">&larr; Inicio</a>
     <h1>Riesgos y Oportunidades</h1>
     <span class="code-pill mono">DOC-SGC-010</span>
@@ -126,7 +128,7 @@
           </div>
           <div>
             <label for="f-origen">Origen</label>
-            <select id="f-origen">
+            <select id="f-origen" onchange="cargarImportables()">
               <option value="">-</option>
               <option value="FODA">FODA</option>
               <option value="PESTEL">PESTEL</option>
@@ -142,6 +144,11 @@
               <option value="Oficina">Oficina</option>
             </select>
           </div>
+        </div>
+
+        <div id="bloque-importar" style="display:none; background:#EAF1F1; border:1px solid #C9DEDE; border-radius:8px; padding:12px 14px; margin-top:14px;">
+          <label for="importar-item" style="margin-top:0;">Elige el ítem a importar (opcional — completa la descripción, ámbito y obra automáticamente)</label>
+          <select id="importar-item"><option value="">Cargando...</option></select>
         </div>
 
         <div class="row2">
@@ -176,15 +183,15 @@
         <textarea id="f-medidas"></textarea>
         <div class="row3">
           <div>
-            <label for="f-fortaleza">Fortaleza (F) 1-5</label>
+            <label for="f-fortaleza">Fortaleza (F) 1-5 <span class="help-icon" onclick="mostrarAyudaFG('fortaleza')">?</span></label>
             <select id="f-fortaleza"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
           </div>
           <div>
-            <label for="f-madurez">Grado madurez (G) 1-5</label>
+            <label for="f-madurez">Grado madurez (G) 1-5 <span class="help-icon" onclick="mostrarAyudaFG('madurez')">?</span></label>
             <select id="f-madurez"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
           </div>
           <div>
-            <label>Valor medida (F+G)</label>
+            <label>Valor medida (F+G) <span class="help-icon" onclick="mostrarAyudaFG('valor')">?</span></label>
             <input type="text" id="f-valormedida" readonly style="background:#EEF1F0;">
           </div>
         </div>
@@ -333,6 +340,92 @@
     const esRiesgo = document.getElementById('f-tipo').value === 'Riesgo';
     document.getElementById('bloque-opciones-manejo').style.display = esRiesgo ? 'block' : 'none';
   };
+
+  // ---- Ayuda Fortaleza (F) / Grado madurez (G) / Valor medida ----
+  // Nota: no encontré una tabla oficial 1-5 para estos campos en la documentación,
+  // a diferencia de Probabilidad/Consecuencia. Esta es una referencia genérica —
+  // si tienes un criterio propio ya definido, dímelo y lo reemplazo aquí.
+  const TABLA_FORTALEZA = [
+    { n: 1, lbl: 'Muy débil', desc: 'La medida de control prácticamente no existe o es inconsistente.' },
+    { n: 2, lbl: 'Débil', desc: 'Existe pero se aplica de forma parcial o poco confiable.' },
+    { n: 3, lbl: 'Moderada', desc: 'Se aplica de forma regular, con algunas brechas.' },
+    { n: 4, lbl: 'Fuerte', desc: 'Se aplica de forma consistente y confiable.' },
+    { n: 5, lbl: 'Muy fuerte', desc: 'Control robusto, verificado y con evidencia de efectividad sostenida.' }
+  ];
+  const TABLA_MADUREZ = [
+    { n: 1, lbl: 'Inicial', desc: 'La medida no está documentada ni estandarizada, depende de la persona.' },
+    { n: 2, lbl: 'Repetible', desc: 'Se repite de forma similar, pero sin procedimiento formal.' },
+    { n: 3, lbl: 'Definida', desc: 'Existe un procedimiento documentado y conocido por los involucrados.' },
+    { n: 4, lbl: 'Gestionada', desc: 'Se mide y se hace seguimiento periódico de su cumplimiento.' },
+    { n: 5, lbl: 'Optimizada', desc: 'Se revisa y mejora continuamente en base a los resultados obtenidos.' }
+  ];
+  window.mostrarAyudaFG = function (campo) {
+    if (campo === 'valor') {
+      document.getElementById('modal-title').textContent = 'Valor medida (F+G)';
+      document.getElementById('modal-sub').textContent = 'Es la suma directa de Fortaleza + Grado de madurez (rango 2-10). Mientras más alto, más confiable es la medida de control existente — y por lo tanto, menor debiese quedar el Riesgo final respecto al valor inicial.';
+      document.getElementById('modal-contenido').innerHTML = '';
+      document.getElementById('modal-ayuda').classList.add('open');
+      return;
+    }
+    const filas = campo === 'fortaleza' ? TABLA_FORTALEZA : TABLA_MADUREZ;
+    document.getElementById('modal-title').textContent = campo === 'fortaleza' ? 'Fortaleza (F)' : 'Grado de madurez (G)';
+    document.getElementById('modal-sub').textContent = 'Referencia orientativa (no hay tabla oficial documentada para este campo — avísame si tienes un criterio propio).';
+    document.getElementById('modal-contenido').innerHTML = renderTablaAyuda(filas);
+    document.getElementById('modal-ayuda').classList.add('open');
+  };
+
+  // ---- Importar desde el Origen elegido ----
+  window.cargarImportables = function () {
+    const origen = document.getElementById('f-origen').value;
+    const bloque = document.getElementById('bloque-importar');
+    const sel = document.getElementById('importar-item');
+    if (!origen || origen === 'Manual') { bloque.style.display = 'none'; return; }
+
+    const tablaPorOrigen = { FODA: 'FODA', PESTEL: 'PESTEL', Hallazgo: 'Hallazgos' };
+    const tabla = tablaPorOrigen[origen];
+    sel.innerHTML = '<option value="">Cargando...</option>';
+    bloque.style.display = 'block';
+
+    const callbackName = 'cb_imp_' + Date.now();
+    window[callbackName] = function (data) {
+      const registros = data.registros || [];
+      sel.innerHTML = '<option value="">Selecciona un ítem para importar...</option>';
+      registros.forEach(function (r) {
+        const opt = document.createElement('option');
+        opt.value = r.id;
+        if (tabla === 'FODA') {
+          opt.textContent = '[' + r['Categoría'] + '] ' + (r['Descripción'] || '').slice(0, 70);
+          opt.dataset.descripcion = r['Descripción'] || '';
+          opt.dataset.ambito = r['Ámbito'] || '';
+          opt.dataset.obra = r['Obra'] || '';
+        } else if (tabla === 'PESTEL') {
+          opt.textContent = '[' + r['Categoría PESTEL'] + '] ' + (r['Factor'] || '');
+          opt.dataset.descripcion = r['Descripción del factor'] || r['Factor'] || '';
+          opt.dataset.ambito = r['Ámbito'] || '';
+          opt.dataset.obra = r['Obra'] || '';
+        } else {
+          opt.textContent = (r['Descripción del hallazgo'] || '').slice(0, 70);
+          opt.dataset.descripcion = r['Descripción del hallazgo'] || '';
+          opt.dataset.ambito = '';
+          opt.dataset.obra = r['Lugar / Obra'] || '';
+        }
+        sel.appendChild(opt);
+      });
+      delete window[callbackName];
+      document.body.removeChild(script);
+    };
+    const script = document.createElement('script');
+    script.src = APP_URL + '?accion=listar&tabla=' + tabla + '&clave=' + APP_KEY + '&callback=' + callbackName;
+    document.body.appendChild(script);
+  };
+
+  document.getElementById('importar-item').addEventListener('change', function () {
+    const opt = this.options[this.selectedIndex];
+    if (!opt.value) return;
+    document.getElementById('f-descripcion').value = opt.dataset.descripcion;
+    if (opt.dataset.ambito) document.getElementById('f-ambito').value = opt.dataset.ambito;
+    if (opt.dataset.obra) document.getElementById('f-obra').value = opt.dataset.obra;
+  });
 
   // ---- Cálculo automático Valor / Nivel ----
   function nivelDeValor(v) {
