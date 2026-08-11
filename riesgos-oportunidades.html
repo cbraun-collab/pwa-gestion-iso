@@ -183,12 +183,12 @@
         <textarea id="f-medidas"></textarea>
         <div class="row3">
           <div>
-            <label for="f-fortaleza">Fortaleza (F) 1-5 <span class="help-icon" onclick="mostrarAyudaFG('fortaleza')">?</span></label>
-            <select id="f-fortaleza"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+            <label for="f-fortaleza">Fortaleza (F) 1-3 <span class="help-icon" onclick="mostrarAyudaFG('fortaleza')">?</span></label>
+            <select id="f-fortaleza"><option value="">-</option><option value="1">1 - Baja</option><option value="2">2 - Media</option><option value="3">3 - Alta</option></select>
           </div>
           <div>
-            <label for="f-madurez">Grado madurez (G) 1-5 <span class="help-icon" onclick="mostrarAyudaFG('madurez')">?</span></label>
-            <select id="f-madurez"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+            <label for="f-madurez">Grado madurez (G) 1-3 <span class="help-icon" onclick="mostrarAyudaFG('madurez')">?</span></label>
+            <select id="f-madurez"><option value="">-</option><option value="1">1 - Baja</option><option value="2">2 - Intermedia</option><option value="3">3 - Alta</option></select>
           </div>
           <div>
             <label>Valor medida (F+G) <span class="help-icon" onclick="mostrarAyudaFG('valor')">?</span></label>
@@ -197,8 +197,8 @@
         </div>
         <div class="row2">
           <div>
-            <label for="f-efectividad">Efectividad</label>
-            <select id="f-efectividad"><option value="">-</option><option>Baja</option><option>Media</option><option>Alta</option></select>
+            <label for="f-efectividad">Efectividad <span class="help-icon" onclick="mostrarAyudaFG('valor')">?</span></label>
+            <input type="text" id="f-efectividad" readonly style="background:#EEF1F0;">
           </div>
           <div>
             <label for="f-riesgofinal">Riesgo final</label>
@@ -342,34 +342,44 @@
   };
 
   // ---- Ayuda Fortaleza (F) / Grado madurez (G) / Valor medida ----
-  // Nota: no encontré una tabla oficial 1-5 para estos campos en la documentación,
-  // a diferencia de Probabilidad/Consecuencia. Esta es una referencia genérica —
-  // si tienes un criterio propio ya definido, dímelo y lo reemplazo aquí.
-  const TABLA_FORTALEZA = [
-    { n: 1, lbl: 'Muy débil', desc: 'La medida de control prácticamente no existe o es inconsistente.' },
-    { n: 2, lbl: 'Débil', desc: 'Existe pero se aplica de forma parcial o poco confiable.' },
-    { n: 3, lbl: 'Moderada', desc: 'Se aplica de forma regular, con algunas brechas.' },
-    { n: 4, lbl: 'Fuerte', desc: 'Se aplica de forma consistente y confiable.' },
-    { n: 5, lbl: 'Muy fuerte', desc: 'Control robusto, verificado y con evidencia de efectividad sostenida.' }
+  // Tablas oficiales — sección "IV - Caracterización de la Medida de Control" de DOC-SGC-010.
+  const TABLA_FORTALEZA_RIESGO = [
+    { n: 1, lbl: 'Baja', desc: 'No ofrece una respuesta eficaz a lo planificado, controles medianamente implementados o mantenidos.' },
+    { n: 2, lbl: 'Media', desc: 'Controles medianamente implementados o mantenidos. Se requiere re-evaluar e implementar nuevos controles.' },
+    { n: 3, lbl: 'Alta', desc: 'Controles completamente implementados y mantenidos permanentemente.' }
   ];
-  const TABLA_MADUREZ = [
-    { n: 1, lbl: 'Inicial', desc: 'La medida no está documentada ni estandarizada, depende de la persona.' },
-    { n: 2, lbl: 'Repetible', desc: 'Se repite de forma similar, pero sin procedimiento formal.' },
-    { n: 3, lbl: 'Definida', desc: 'Existe un procedimiento documentado y conocido por los involucrados.' },
-    { n: 4, lbl: 'Gestionada', desc: 'Se mide y se hace seguimiento periódico de su cumplimiento.' },
-    { n: 5, lbl: 'Optimizada', desc: 'Se revisa y mejora continuamente en base a los resultados obtenidos.' }
+  const TABLA_MADUREZ_RIESGO = [
+    { n: 1, lbl: 'Baja', desc: '0 a 6 meses de antigüedad de la acción de control.' },
+    { n: 2, lbl: 'Intermedia', desc: '6 a 12 meses de antigüedad de la acción de control.' },
+    { n: 3, lbl: 'Alta', desc: 'Más de 12 meses de antigüedad de la acción de control.' }
+  ];
+  const TABLA_FORTALEZA_OPORTUNIDAD = [
+    { n: 1, lbl: 'Baja', desc: 'No ofrece una respuesta eficaz a lo planificado, acciones medianamente implementadas o mantenidas.' },
+    { n: 2, lbl: 'Media', desc: 'Acciones medianamente implementadas o mantenidas. Se requiere re-evaluar e implementar nuevas acciones.' },
+    { n: 3, lbl: 'Alta', desc: 'Acciones completamente implementadas y mantenidas permanentemente.' }
+  ];
+  const TABLA_MADUREZ_OPORTUNIDAD = [
+    { n: 1, lbl: 'Baja', desc: '1 a 3 meses de implantación de la acción.' },
+    { n: 2, lbl: 'Intermedia', desc: '3 a 6 meses de implantación de la acción.' },
+    { n: 3, lbl: 'Alta', desc: 'Más de 6 meses de implantación de la acción.' }
   ];
   window.mostrarAyudaFG = function (campo) {
+    const esOportunidad = document.getElementById('f-tipo').value === 'Oportunidad';
     if (campo === 'valor') {
-      document.getElementById('modal-title').textContent = 'Valor medida (F+G)';
-      document.getElementById('modal-sub').textContent = 'Es la suma directa de Fortaleza + Grado de madurez (rango 2-10). Mientras más alto, más confiable es la medida de control existente — y por lo tanto, menor debiese quedar el Riesgo final respecto al valor inicial.';
-      document.getElementById('modal-contenido').innerHTML = '';
+      document.getElementById('modal-title').textContent = 'Valor medida (F+G) y Efectividad';
+      document.getElementById('modal-sub').textContent = 'Según tabla oficial "V - Efectividad de la Medida de Control".';
+      document.getElementById('modal-contenido').innerHTML =
+        '<div class="scale-row"><div class="n n5">&gt;4</div><div class="lbl">Alta</div><div class="desc">Suma F+G mayor a 4.</div></div>' +
+        '<div class="scale-row"><div class="n n3">2-4</div><div class="lbl">Media</div><div class="desc">Suma F+G mayor a 2 y menor o igual a 4.</div></div>' +
+        '<div class="scale-row"><div class="n n1">≤2</div><div class="lbl">Baja</div><div class="desc">Suma F+G menor o igual a 2.</div></div>';
       document.getElementById('modal-ayuda').classList.add('open');
       return;
     }
-    const filas = campo === 'fortaleza' ? TABLA_FORTALEZA : TABLA_MADUREZ;
+    const filas = campo === 'fortaleza'
+      ? (esOportunidad ? TABLA_FORTALEZA_OPORTUNIDAD : TABLA_FORTALEZA_RIESGO)
+      : (esOportunidad ? TABLA_MADUREZ_OPORTUNIDAD : TABLA_MADUREZ_RIESGO);
     document.getElementById('modal-title').textContent = campo === 'fortaleza' ? 'Fortaleza (F)' : 'Grado de madurez (G)';
-    document.getElementById('modal-sub').textContent = 'Referencia orientativa (no hay tabla oficial documentada para este campo — avísame si tienes un criterio propio).';
+    document.getElementById('modal-sub').textContent = 'Tabla oficial DOC-SGC-010, para ' + (esOportunidad ? 'Oportunidades' : 'Riesgos') + '.';
     document.getElementById('modal-contenido').innerHTML = renderTablaAyuda(filas);
     document.getElementById('modal-ayuda').classList.add('open');
   };
@@ -429,10 +439,16 @@
 
   // ---- Cálculo automático Valor / Nivel ----
   function nivelDeValor(v) {
+    // Rangos oficiales — tabla "III. MATRIZ PROBABILIDAD POR CONSECUENCIA" de DOC-SGC-010
     if (v <= 4) return 'Bajo';
-    if (v <= 9) return 'Moderado';
-    if (v <= 16) return 'Alto';
-    return 'Crítico';
+    if (v <= 10) return 'Medio';
+    return 'Alto';
+  }
+  function efectividadDeValorMedida(v) {
+    // Tabla oficial "V - Efectividad de la Medida de Control"
+    if (v > 4) return 'Alta';
+    if (v > 2) return 'Media';
+    return 'Baja';
   }
   function recalcular() {
     const p = Number(document.getElementById('f-prob').value) || 0;
@@ -443,7 +459,9 @@
 
     const f = Number(document.getElementById('f-fortaleza').value) || 0;
     const g = Number(document.getElementById('f-madurez').value) || 0;
-    document.getElementById('f-valormedida').value = (f || g) ? (f + g) : '';
+    const valorMedida = (f || g) ? (f + g) : '';
+    document.getElementById('f-valormedida').value = valorMedida;
+    document.getElementById('f-efectividad').value = valorMedida ? efectividadDeValorMedida(valorMedida) : '';
   }
   ['f-prob', 'f-consec', 'f-fortaleza', 'f-madurez'].forEach(function (id) {
     document.getElementById(id).addEventListener('change', recalcular);
