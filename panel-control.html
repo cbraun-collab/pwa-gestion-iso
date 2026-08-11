@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Control · Gestión Integrada ISO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#003B49; --teal-light:#0A5568; --orange:#CF4520;
+    --cream:#F7F5F0; --ink:#12222A; --line:#DCE3E1; --card-bg:#FFFFFF; --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--cream); color:var(--ink); font-family:'Space Grotesk',sans-serif; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  header{background:var(--teal); color:#fff; padding:20px 24px;}
+  .header-inner{max-width:1040px; margin:0 auto; display:flex; align-items:center; gap:14px;}
+  .back{color:#fff; opacity:.8; text-decoration:none; font-size:13px;}
+  .back:hover{opacity:1;}
+  h1{margin:0; font-size:18px; font-weight:600;}
+  .code-pill{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:rgba(255,255,255,.12); padding:3px 9px; border-radius:999px; margin-left:auto;}
+  main{max-width:1040px; margin:0 auto; padding:28px 24px 64px;}
+
+  .kpi-row{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px;}
+  @media (max-width:720px){.kpi-row{grid-template-columns:1fr 1fr;}}
+  .kpi{background:var(--card-bg); border:1px solid var(--line); border-radius:12px; padding:16px;}
+  .kpi .n{font-size:26px; font-weight:700; font-family:'JetBrains Mono',monospace;}
+  .kpi .lbl{font-size:11.5px; color:#6B7A7E; margin-top:2px;}
+  .kpi.alerta .n{color:#B93B1A;}
+  .kpi.ok .n{color:#2C6E45;}
+
+  .panel{background:var(--card-bg); border:1px solid var(--line); border-radius:var(--radius); padding:22px; margin-bottom:22px;}
+  .panel h2{margin:0 0 4px; font-size:16px; font-weight:600; display:flex; align-items:center; gap:8px;}
+  .panel .sub{margin:0 0 16px; font-size:12.5px; color:#6B7A7E;}
+  .panel .count{font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9A9E; font-weight:400;}
+
+  .item-row{display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid #EEF1F0;}
+  .item-row:last-child{border-bottom:none;}
+  .item-dot{width:8px; height:8px; border-radius:50%; margin-top:5px; flex-shrink:0;}
+  .item-dot.alerta{background:#CF4520;}
+  .item-dot.pendiente{background:#C8973A;}
+  .item-dot.ok{background:#2C6E45;}
+  .item-body{flex:1;}
+  .item-desc{font-size:13px; font-weight:500;}
+  .item-meta{font-size:11px; color:#8A9A9E; font-family:'JetBrains Mono',monospace; margin-top:2px;}
+  .empty{padding:20px; text-align:center; color:#8A9A9E; font-size:13px;}
+  .loading{padding:20px; text-align:center; color:#8A9A9E; font-size:13px;}
+
+  .refresh-bar{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;}
+  .refresh-bar button{
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12.5px;
+    padding:8px 14px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; color:var(--teal-light);
+  }
+  .updated-at{font-size:11px; color:#8A9A9E; font-family:'JetBrains Mono',monospace;}
+
+  .aviso-correo{background:#EAF1F1; border:1px solid #C9DEDE; border-radius:10px; padding:12px 16px; font-size:12px; color:#0A5568; margin-bottom:22px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="back" href="index.html">&larr; Inicio</a>
+    <h1>Panel de Control</h1>
+    <span class="code-pill mono">Vista consolidada</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="refresh-bar">
+    <span class="updated-at" id="updated-at">Cargando...</span>
+    <button onclick="cargarTodo()">↻ Actualizar</button>
+  </div>
+
+  <div class="aviso-correo">
+    Este mismo resumen se envía automáticamente cada lunes a <strong>cbraun@senercom.cl</strong> y <strong>contacto@senercom.cl</strong> (configurado en Apps Script).
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi alerta"><div class="n" id="kpi-alertas">-</div><div class="lbl">Ítems en alerta</div></div>
+    <div class="kpi"><div class="n" id="kpi-pendientes">-</div><div class="lbl">Pendientes de revisión</div></div>
+    <div class="kpi"><div class="n" id="kpi-monitoreados">-</div><div class="lbl">Monitoreados en total</div></div>
+    <div class="kpi ok"><div class="n" id="kpi-hallazgos-pend">-</div><div class="lbl">Hallazgos sin evaluar</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Riesgos y Oportunidades <span class="count" id="c-riesgos"></span></h2>
+    <p class="sub">Registros marcados para monitoreo, priorizando Nivel Alto/Crítico y estados pendientes.</p>
+    <div id="lista-riesgos" class="loading">Cargando...</div>
+  </div>
+
+  <div class="panel">
+    <h2>Balance Scorecard <span class="count" id="c-bsc"></span></h2>
+    <p class="sub">Objetivos marcados para monitoreo.</p>
+    <div id="lista-bsc" class="loading">Cargando...</div>
+  </div>
+
+  <div class="panel">
+    <h2>Hallazgos <span class="count" id="c-hallazgos"></span></h2>
+    <p class="sub">Capturados desde terreno, pendientes de decidir si escalan a FOR-SGC-001.</p>
+    <div id="lista-hallazgos" class="loading">Cargando...</div>
+  </div>
+
+  <div class="panel">
+    <h2>FODA / PESTEL / Partes Interesadas <span class="count" id="c-otros"></span></h2>
+    <p class="sub">Ítems marcados para monitoreo en el resto del flujo.</p>
+    <div id="lista-otros" class="loading">Cargando...</div>
+  </div>
+
+</main>
+
+<script>
+  const APP_URL = 'https://script.google.com/macros/s/AKfycbzCquDf6sVRaGePNemoq1CMlZN9wdivpRmCw7omiSkgHiIcWIcf8jhC5t9Lc01UhMt7hw/exec';
+  const APP_KEY = 'senercom-sgi-7x9K2m';
+
+  function escapeHtml(str) {
+    if (str === undefined || str === null) return '';
+    return String(str).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
+  }
+
+  function jsonp(tabla, callbackFn) {
+    const callbackName = 'cb_' + tabla + '_' + Date.now();
+    window[callbackName] = function (data) {
+      callbackFn(data.registros || []);
+      delete window[callbackName];
+      document.body.removeChild(script);
+    };
+    const script = document.createElement('script');
+    script.src = APP_URL + '?accion=listar&tabla=' + tabla + '&clave=' + APP_KEY + '&callback=' + callbackName;
+    document.body.appendChild(script);
+  }
+
+  function monitoreados(lista) {
+    return lista.filter(function (r) { return r['Monitorear en Panel de Control'] === 'Sí'; });
+  }
+
+  let totalAlertas = 0, totalPendientes = 0, totalMonitoreados = 0;
+
+  function cargarTodo() {
+    document.getElementById('updated-at').textContent = 'Actualizando...';
+    totalAlertas = 0; totalPendientes = 0; totalMonitoreados = 0;
+
+    jsonp('Riesgos_Oportunidades', function (registros) {
+      const items = monitoreados(registros);
+      document.getElementById('c-riesgos').textContent = '(' + items.length + ')';
+      totalMonitoreados += items.length;
+      const cont = document.getElementById('lista-riesgos');
+      if (!items.length) { cont.innerHTML = '<div class="empty">Sin registros marcados para monitoreo.</div>'; return; }
+      items.sort(function (a, b) { return (b['Valor (PxC)'] || 0) - (a['Valor (PxC)'] || 0); });
+      cont.innerHTML = items.map(function (r) {
+        const esAlerta = r['Nivel'] === 'Crítico' || r['Nivel'] === 'Alto' || r['Estado'] === 'Vencido';
+        const esPendiente = r['Estado'] === 'Pendiente' || r['Estado'] === 'En proceso';
+        if (esAlerta) totalAlertas++; else if (esPendiente) totalPendientes++;
+        const dot = esAlerta ? 'alerta' : (esPendiente ? 'pendiente' : 'ok');
+        return '<div class="item-row"><div class="item-dot ' + dot + '"></div><div class="item-body">' +
+          '<div class="item-desc">' + escapeHtml(r['Descripción']) + '</div>' +
+          '<div class="item-meta">' + (r['Tipo'] || '') + ' · Nivel: ' + (r['Nivel'] || '-') + ' · Estado: ' + (r['Estado'] || '-') + ' · Responsable: ' + escapeHtml(r['Responsable'] || '-') + ' · Plazo: ' + escapeHtml(r['Plazo'] || '-') + '</div>' +
+          '</div></div>';
+      }).join('');
+      actualizarKPIs();
+    });
+
+    jsonp('Balance_Scorecard', function (registros) {
+      const items = monitoreados(registros);
+      document.getElementById('c-bsc').textContent = '(' + items.length + ')';
+      totalMonitoreados += items.length;
+      const cont = document.getElementById('lista-bsc');
+      if (!items.length) { cont.innerHTML = '<div class="empty">Sin objetivos marcados para monitoreo.</div>'; return; }
+      cont.innerHTML = items.map(function (r) {
+        return '<div class="item-row"><div class="item-dot ok"></div><div class="item-body">' +
+          '<div class="item-desc">' + escapeHtml(r['Objetivo general']) + '</div>' +
+          '<div class="item-meta">' + (r['Ámbito'] || '') + ' · Meta: ' + escapeHtml(r['Meta']) + ' · Indicador: ' + escapeHtml(r['Indicador y medición'] || '-') + '</div>' +
+          '</div></div>';
+      }).join('');
+      actualizarKPIs();
+    });
+
+    jsonp('Hallazgos', function (registros) {
+      const pendientes = registros.filter(function (r) { return !r['¿Aplica a evaluación profunda (FOR-SGC-001)?']; });
+      document.getElementById('c-hallazgos').textContent = '(' + pendientes.length + ' sin evaluar)';
+      document.getElementById('kpi-hallazgos-pend').textContent = pendientes.length;
+      const cont = document.getElementById('lista-hallazgos');
+      if (!pendientes.length) { cont.innerHTML = '<div class="empty">No hay hallazgos pendientes de evaluar.</div>'; return; }
+      cont.innerHTML = pendientes.map(function (r) {
+        return '<div class="item-row"><div class="item-dot pendiente"></div><div class="item-body">' +
+          '<div class="item-desc">' + escapeHtml(r['Descripción del hallazgo']) + '</div>' +
+          '<div class="item-meta">' + (r['Lugar / Obra'] || '-') + ' · ' + (r['Fecha'] || '-') + ' · Capturado por: ' + escapeHtml(r['Capturado por'] || '-') + '</div>' +
+          '</div></div>';
+      }).join('');
+    });
+
+    let recibidos = 0;
+    ['Partes_Interesadas', 'FODA', 'PESTEL'].forEach(function (tabla) {
+      jsonp(tabla, function (registros) {
+        recibidos++;
+        window['_reg_' + tabla] = monitoreados(registros);
+        if (recibidos === 3) {
+          const todos = window['_reg_Partes_Interesadas'].map(function (r) { return { tabla: 'Partes Interesadas', desc: r['Parte interesada'] }; })
+            .concat(window['_reg_FODA'].map(function (r) { return { tabla: 'FODA (' + r['Categoría'] + ')', desc: r['Descripción'] }; }))
+            .concat(window['_reg_PESTEL'].map(function (r) { return { tabla: 'PESTEL (' + r['Categoría PESTEL'] + ')', desc: r['Factor'] }; }));
+          document.getElementById('c-otros').textContent = '(' + todos.length + ')';
+          totalMonitoreados += todos.length;
+          const cont = document.getElementById('lista-otros');
+          if (!todos.length) { cont.innerHTML = '<div class="empty">Sin ítems marcados para monitoreo.</div>'; return; }
+          cont.innerHTML = todos.map(function (r) {
+            return '<div class="item-row"><div class="item-dot ok"></div><div class="item-body">' +
+              '<div class="item-desc">' + escapeHtml(r.desc) + '</div>' +
+              '<div class="item-meta">' + r.tabla + '</div>' +
+              '</div></div>';
+          }).join('');
+          actualizarKPIs();
+        }
+      });
+    });
+  }
+
+  function actualizarKPIs() {
+    document.getElementById('kpi-alertas').textContent = totalAlertas;
+    document.getElementById('kpi-pendientes').textContent = totalPendientes;
+    document.getElementById('kpi-monitoreados').textContent = totalMonitoreados;
+    document.getElementById('updated-at').textContent = 'Actualizado: ' + new Date().toLocaleString('es-CL');
+  }
+
+  cargarTodo();
+</script>
+
+</body>
+</html>

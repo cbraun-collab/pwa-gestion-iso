@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FODA · Gestión Integrada ISO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#003B49; --teal-light:#0A5568; --orange:#CF4520;
+    --cream:#F7F5F0; --ink:#12222A; --line:#DCE3E1; --card-bg:#FFFFFF; --radius:14px;
+    --f-color:#2C6E45; --d-color:#B93B1A; --o-color:#0A5568; --a-color:#8A5A2A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--cream); color:var(--ink); font-family:'Space Grotesk',sans-serif; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  header{background:var(--teal); color:#fff; padding:20px 24px;}
+  .header-inner{max-width:980px; margin:0 auto; display:flex; align-items:center; gap:14px;}
+  .back{color:#fff; opacity:.8; text-decoration:none; font-size:13px;}
+  .back:hover{opacity:1;}
+  h1{margin:0; font-size:18px; font-weight:600;}
+  .code-pill{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:rgba(255,255,255,.12); padding:3px 9px; border-radius:999px; margin-left:auto;}
+
+  main{max-width:980px; margin:0 auto; padding:28px 24px 64px;}
+
+  .tabs{display:flex; gap:6px; margin-bottom:20px; border-bottom:1px solid var(--line);}
+  .tab-btn{
+    background:none; border:none; padding:10px 16px; font-family:'Space Grotesk',sans-serif;
+    font-size:13.5px; font-weight:500; color:#8A9A9E; cursor:pointer; border-bottom:2px solid transparent;
+  }
+  .tab-btn.active{color:var(--teal); border-bottom-color:var(--orange);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  .panel{background:var(--card-bg); border:1px solid var(--line); border-radius:var(--radius); padding:22px; margin-bottom:22px;}
+  .panel h2{margin:0 0 4px; font-size:16px; font-weight:600;}
+  .panel .sub{margin:0 0 18px; font-size:12.5px; color:#6B7A7E;}
+
+  label{display:block; font-size:12.5px; font-weight:500; color:#3F4E52; margin-bottom:5px; margin-top:14px;}
+  label:first-of-type{margin-top:0;}
+  input[type=text], textarea, select{
+    width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:8px;
+    font-family:'Space Grotesk',sans-serif; font-size:14px; color:var(--ink); background:#FCFCFB;
+  }
+  textarea{resize:vertical; min-height:52px;}
+  input:focus, textarea:focus, select:focus{outline:2px solid var(--teal-light); outline-offset:1px; border-color:var(--teal-light);}
+
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  @media (max-width:640px){.row2,.row3{grid-template-columns:1fr;}}
+
+  .actions{display:flex; align-items:center; gap:12px; margin-top:18px;}
+  button{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13.5px; padding:10px 18px; border-radius:8px; border:none; cursor:pointer;}
+  .btn-primary{background:var(--orange); color:#fff;}
+  .btn-primary:hover{background:#B93B1A;}
+  .btn-secondary{background:transparent; color:var(--teal-light); border:1px solid var(--line);}
+  .btn-small{padding:6px 12px; font-size:12px;}
+  .status{font-size:12.5px; color:#6B7A7E;}
+  .status.ok{color:#2C6E45;}
+  .status.err{color:#B93B1A;}
+
+  .quad-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:6px;}
+  @media (max-width:640px){.quad-grid{grid-template-columns:1fr;}}
+  .quad{border-radius:10px; padding:14px; border:1px solid var(--line);}
+  .quad h3{margin:0 0 8px; font-size:13px; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.4px;}
+  .quad.F{background:#EAF5EE;} .quad.F h3{color:var(--f-color);}
+  .quad.D{background:#FBEAE5;} .quad.D h3{color:var(--d-color);}
+  .quad.O{background:#EAF1F1;} .quad.O h3{color:var(--o-color);}
+  .quad.A{background:#F5EDE1;} .quad.A h3{color:var(--a-color);}
+  .quad-item{background:#fff; border-radius:7px; padding:8px 10px; margin-bottom:6px; font-size:12.8px; line-height:1.4; position:relative;}
+  .quad-item .meta{display:block; margin-top:4px; font-size:10.5px; color:#8A9A9E; font-family:'JetBrains Mono',monospace;}
+  .quad-empty{font-size:12px; color:#9AA8AC; padding:6px 0;}
+  .crit-badge{display:inline-block; font-size:9.5px; padding:1px 6px; border-radius:999px; background:#12222A; color:#fff; margin-left:6px;}
+
+  .cross-card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:12px; background:#FCFCFB;}
+  .cross-card .tipo-tag{font-family:'JetBrains Mono',monospace; font-size:10px; padding:2px 8px; border-radius:999px; background:var(--teal); color:#fff; margin-right:8px;}
+  .cross-pair{font-size:12.5px; color:#3F4E52; margin:8px 0;}
+  .cross-pair .lbl{font-weight:600;}
+  .cross-empty{padding:22px; text-align:center; color:#8A9A9E; font-size:13px;}
+
+  .help-icon{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:16px; height:16px; border-radius:50%; background:var(--teal-light); color:#fff;
+    font-size:10.5px; font-weight:700; cursor:pointer; vertical-align:middle; margin-left:4px;
+  }
+  .modal-overlay{
+    display:none; position:fixed; inset:0; background:rgba(18,34,42,.55);
+    align-items:center; justify-content:center; z-index:50; padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:#fff; border-radius:14px; max-width:720px; width:100%;
+    max-height:85vh; overflow-y:auto; padding:24px;
+  }
+  .modal-box h3{margin:0 0 4px; font-size:16px;}
+  .modal-box .modal-sub{margin:0 0 16px; font-size:12.5px; color:#6B7A7E;}
+  .modal-close{float:right; background:none; border:none; font-size:20px; cursor:pointer; color:#8A9A9E; padding:0;}
+  .scale-row{display:grid; grid-template-columns:34px 90px 1fr; gap:10px; padding:9px 0; border-bottom:1px solid #EEF1F0; font-size:12.5px; align-items:start;}
+  .scale-row .n{font-family:'JetBrains Mono',monospace; font-weight:700; text-align:center; border-radius:6px; padding:3px 0; color:#fff; align-self:start;}
+  .scale-row .n.n1{background:#2C6E45;} .scale-row .n.n2{background:#5C8F3F;} .scale-row .n.n3{background:#C8973A;}
+  .scale-row .n.n4{background:#CF4520;} .scale-row .n.n5{background:#8A1F1F;}
+  .scale-row .lbl{font-weight:600;}
+  .scale-row .desc{color:#4B5D63; line-height:1.4;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="back" href="index.html">&larr; Inicio</a>
+    <h1>FODA</h1>
+    <span class="code-pill mono">DOC-SGC-003</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="carga">Cargar ítems</button>
+    <button class="tab-btn" data-tab="vista">Vista FODA</button>
+    <button class="tab-btn" data-tab="cruzada">Matriz Cruzada</button>
+  </div>
+
+  <!-- ==== TAB 1: CARGA ==== -->
+  <div class="tab-panel active" id="tab-carga">
+    <div class="panel">
+      <h2 id="form-title">Nuevo ítem FODA</h2>
+      <p class="sub">Mismo formato que el documento — Fortaleza, Debilidad, Oportunidad o Amenaza.</p>
+
+      <form id="form-foda">
+        <input type="hidden" id="f-id" value="">
+
+        <div class="row3">
+          <div>
+            <label for="f-categoria">Categoría</label>
+            <select id="f-categoria" required>
+              <option value="">Selecciona...</option>
+              <option value="Fortaleza">Fortaleza</option>
+              <option value="Debilidad">Debilidad</option>
+              <option value="Oportunidad">Oportunidad</option>
+              <option value="Amenaza">Amenaza</option>
+            </select>
+          </div>
+          <div>
+            <label for="f-ambito">Ámbito</label>
+            <select id="f-ambito" required>
+              <option value="">Selecciona...</option>
+              <option value="Terreno">Terreno</option>
+              <option value="Oficina">Oficina</option>
+            </select>
+          </div>
+          <div>
+            <label for="f-obra">Obra (opcional)</label>
+            <input type="text" id="f-obra" placeholder="Solo si es específico de un proyecto">
+          </div>
+        </div>
+
+        <label for="f-descripcion">Descripción</label>
+        <textarea id="f-descripcion" required></textarea>
+
+        <div class="row2">
+          <div>
+            <label for="f-prob">Probabilidad (1-5) <span class="help-icon" onclick="mostrarAyuda('prob')" title="Ver qué significa cada nivel">?</span></label>
+            <select id="f-prob"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+          </div>
+          <div>
+            <label for="f-impacto">Impacto (1-5) <span class="help-icon" onclick="mostrarAyuda('impacto')" title="Ver qué significa cada nivel">?</span></label>
+            <select id="f-impacto"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+          </div>
+        </div>
+
+        <label style="display:flex; align-items:center; gap:8px; margin-top:16px;">
+          <input type="checkbox" id="f-monitorear" style="width:auto;">
+          Monitorear en Panel de Control
+        </label>
+
+        <label for="f-responsables">Responsables de ejecución (mínimo 2 personas, separadas por coma)</label>
+        <input type="text" id="f-responsables" placeholder="Ej: Carlos Braun, Cristián Menéndez" required>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary" id="btn-guardar">Guardar</button>
+          <button type="button" class="btn-secondary" id="btn-cancelar" style="display:none;">Cancelar edición</button>
+          <span class="status" id="status"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==== TAB 2: VISTA ==== -->
+  <div class="tab-panel" id="tab-vista">
+    <div class="panel">
+      <h2>Vista FODA</h2>
+      <p class="sub">Todo lo cargado, agrupado como en el documento original.</p>
+      <div class="quad-grid">
+        <div class="quad F"><h3>Fortalezas</h3><div id="q-Fortaleza"></div></div>
+        <div class="quad D"><h3>Debilidades</h3><div id="q-Debilidad"></div></div>
+        <div class="quad O"><h3>Oportunidades</h3><div id="q-Oportunidad"></div></div>
+        <div class="quad A"><h3>Amenazas</h3><div id="q-Amenaza"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==== TAB 3: CRUZADA ==== -->
+  <div class="tab-panel" id="tab-cruzada">
+    <div class="panel">
+      <h2>Cruces sugeridos</h2>
+      <p class="sub">Combinaciones de mayor criticidad (Fortalezas/Debilidades × Oportunidades/Amenazas). Escribe la estrategia y guarda el cruce que te sirva.</p>
+      <div id="sugeridos"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Cruce manual</h2>
+      <p class="sub">Elige libremente cualquier combinación para analizar.</p>
+      <div class="row2">
+        <div>
+          <label for="cx-interno">Factor interno (Fortaleza/Debilidad)</label>
+          <select id="cx-interno"></select>
+        </div>
+        <div>
+          <label for="cx-externo">Factor externo (Oportunidad/Amenaza)</label>
+          <select id="cx-externo"></select>
+        </div>
+      </div>
+      <label for="cx-estrategia">Estrategia resultante</label>
+      <textarea id="cx-estrategia"></textarea>
+      <div class="actions">
+        <button type="button" class="btn-primary" id="btn-guardar-cruce">Guardar cruce</button>
+        <span class="status" id="status-cruce"></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Cruces guardados</h2>
+      <div id="cruces-guardados"></div>
+    </div>
+  </div>
+
+</main>
+
+<div class="modal-overlay" id="modal-ayuda">
+  <div class="modal-box">
+    <button class="modal-close" onclick="cerrarAyuda()">&times;</button>
+    <h3 id="modal-title">Escala</h3>
+    <p class="modal-sub" id="modal-sub"></p>
+    <div id="modal-contenido"></div>
+  </div>
+</div>
+
+<script>
+  // ---- Tablas oficiales extraídas de DOC-SGC-010 ----
+  const TABLA_PROB_RIESGO = [
+    { n: 1, lbl: 'Muy Baja', desc: 'Insignificante, sucede sólo en escenarios excepcionales. Nunca o no se ha presentado en los últimos 5 años.' },
+    { n: 2, lbl: 'Baja', desc: 'El riesgo podría ocurrir en algún momento, es poco común o frecuente. Al menos 1 vez en los últimos 5 años.' },
+    { n: 3, lbl: 'Moderada', desc: 'El riesgo puede ocurrir en algún momento. Al menos 1 vez en los últimos 2 años.' },
+    { n: 4, lbl: 'Alta', desc: 'El riesgo ocurrirá en la mayoría de las circunstancias. Al menos 1 vez en el último año.' },
+    { n: 5, lbl: 'Muy Alta', desc: 'Se espera que el riesgo ocurra en la mayoría de las circunstancias. Más de 1 vez al año.' }
+  ];
+  const TABLA_CONSEC_RIESGO = [
+    { n: 1, lbl: 'Bajo', desc: 'No genera pérdidas significativas ($0 a $500.000) ni compromete la imagen pública. Efecto pequeño o nulo en procesos/servicios. Perjuicio tolerable.' },
+    { n: 2, lbl: 'Menor', desc: 'Pérdidas financieras de $500.001 a $5.000.000, impacto menor en presupuesto e imagen. Bajo daño en continuidad operacional.' },
+    { n: 3, lbl: 'Moderado', desc: 'Pérdidas de $5.000.001 a $20.000.000. Deterioro que dificulta o retrasa el cumplimiento de objetivos. Alta pérdida financiera.' },
+    { n: 4, lbl: 'Mayor', desc: 'Pérdidas de $20.000.001 a $50.000.000. Daña significativamente la continuidad operacional. Pérdida financiera grave.' },
+    { n: 5, lbl: 'Crítico', desc: 'Pérdidas superiores a $50.000.000, impacto catastrófico. Pone en riesgo la continuidad del negocio.' }
+  ];
+  const TABLA_PROB_OPORTUNIDAD = [
+    { n: 1, lbl: 'Muy poco probable', desc: 'Se considera muy poco probable que ocurra (inexistente) por los altos costos que conlleva frente al beneficio. No ocurre.' },
+    { n: 2, lbl: 'Largo plazo', desc: 'Es relativamente probable que ocurra a largo plazo (5 años).' },
+    { n: 3, lbl: 'Mediano plazo', desc: 'Se prevé que pueda ocurrir a mediano plazo (3 años).' },
+    { n: 4, lbl: 'Corto plazo', desc: 'Se prevé que pueda ocurrir a corto plazo, el beneficio es alto respecto al costo (1 año).' },
+    { n: 5, lbl: 'Muy corto plazo', desc: 'Se prevé que pueda ocurrir a corto plazo, el beneficio es muy alto respecto al costo (6 meses).' }
+  ];
+  const TABLA_CONSEC_OPORTUNIDAD = [
+    { n: 1, lbl: 'Insignificante', desc: 'Insignificantes beneficios sobre procesos/servicios/personas. Ganancias no significativas ($0 a $500.000).' },
+    { n: 2, lbl: 'Leve', desc: 'Leves beneficios. Ganancias financieras entre $500.001 y $5.000.000.' },
+    { n: 3, lbl: 'Mediano', desc: 'Medianos beneficios que afectan a una parte o área de la organización. Ganancias entre $5.000.001 y $20.000.000.' },
+    { n: 4, lbl: 'Alto', desc: 'Beneficios que afectan a toda la organización. Ganancias entre $20.000.001 y $50.000.000.' },
+    { n: 5, lbl: 'Muy alto', desc: 'Altos beneficios que afectan a toda la organización. Ganancias por sobre los $50.000.000.' }
+  ];
+
+  function renderTabla(filas) {
+    return filas.map(function (f) {
+      return '<div class="scale-row"><div class="n n' + f.n + '">' + f.n + '</div><div class="lbl">' + f.lbl + '</div><div class="desc">' + f.desc + '</div></div>';
+    }).join('');
+  }
+
+  window.mostrarAyuda = function (campo) {
+    const categoria = document.getElementById('f-categoria').value;
+    const esOportunidad = (categoria === 'Fortaleza' || categoria === 'Oportunidad');
+    let filas, titulo;
+    if (campo === 'prob') {
+      filas = esOportunidad ? TABLA_PROB_OPORTUNIDAD : TABLA_PROB_RIESGO;
+      titulo = 'Probabilidad (1-5)';
+    } else {
+      filas = esOportunidad ? TABLA_CONSEC_OPORTUNIDAD : TABLA_CONSEC_RIESGO;
+      titulo = 'Impacto (1-5)';
+    }
+    document.getElementById('modal-title').textContent = titulo;
+    document.getElementById('modal-sub').textContent = categoria
+      ? 'Escala para ' + (esOportunidad ? 'Fortalezas/Oportunidades' : 'Debilidades/Amenazas') + ' — según DOC-SGC-010'
+      : 'Selecciona primero una categoría para ver la escala exacta. Mostrando por defecto la escala de riesgo (Debilidad/Amenaza).';
+    document.getElementById('modal-contenido').innerHTML = renderTabla(filas);
+    document.getElementById('modal-ayuda').classList.add('open');
+  };
+
+  window.cerrarAyuda = function () {
+    document.getElementById('modal-ayuda').classList.remove('open');
+  };
+
+  document.getElementById('modal-ayuda').addEventListener('click', function (e) {
+    if (e.target === this) cerrarAyuda();
+  });
+
+  const APP_URL = 'https://script.google.com/macros/s/AKfycbzCquDf6sVRaGePNemoq1CMlZN9wdivpRmCw7omiSkgHiIcWIcf8jhC5t9Lc01UhMt7hw/exec';
+  const APP_KEY = 'senercom-sgi-7x9K2m';
+  const USUARIO = 'Carlos Braun';
+  let itemsFoda = [];
+  let crucesFoda = [];
+
+  // ---- Tabs ----
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'vista') renderVista();
+      if (btn.dataset.tab === 'cruzada') renderCruzada();
+    });
+  });
+
+  function escapeHtml(str) {
+    if (str === undefined || str === null) return '';
+    return String(str).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
+  }
+
+  function jsonp(url, callbackFn) {
+    const callbackName = 'cb_' + Date.now() + '_' + Math.floor(Math.random() * 9999);
+    window[callbackName] = function (data) {
+      callbackFn(data);
+      delete window[callbackName];
+      document.body.removeChild(script);
+    };
+    const script = document.createElement('script');
+    script.src = url + (url.indexOf('?') === -1 ? '?' : '&') + 'callback=' + callbackName;
+    document.body.appendChild(script);
+  }
+
+  function cargarTodo() {
+    jsonp(APP_URL + '?accion=listar&tabla=FODA&clave=' + APP_KEY, function (data) {
+      itemsFoda = data.registros || [];
+      renderVista();
+      poblarSelectsCruce();
+    });
+    jsonp(APP_URL + '?accion=listar&tabla=Cruce_FODA&clave=' + APP_KEY, function (data) {
+      crucesFoda = data.registros || [];
+      renderCrucesGuardados();
+      renderSugeridos();
+    });
+  }
+
+  // ---- FORM FODA ----
+  const form = document.getElementById('form-foda');
+  const statusEl = document.getElementById('status');
+  const btnCancelar = document.getElementById('btn-cancelar');
+  const formTitle = document.getElementById('form-title');
+
+  function setStatus(el, msg, tipo) {
+    el.textContent = msg;
+    el.className = 'status' + (tipo ? ' ' + tipo : '');
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const responsables = document.getElementById('f-responsables').value;
+    if (responsables.split(',').filter(function (n) { return n.trim(); }).length < 2) {
+      setStatus(statusEl, 'Debes indicar al menos 2 responsables, separados por coma.', 'err');
+      return;
+    }
+    const id = document.getElementById('f-id').value;
+    const p = document.getElementById('f-prob').value;
+    const i = document.getElementById('f-impacto').value;
+    const registro = {
+      'Categoría': document.getElementById('f-categoria').value,
+      'Descripción': document.getElementById('f-descripcion').value,
+      'Ámbito': document.getElementById('f-ambito').value,
+      'Obra': document.getElementById('f-obra').value,
+      'Probabilidad': p,
+      'Impacto': i,
+      'Criticidad (P x I)': (p && i) ? (Number(p) * Number(i)) : '',
+      'Responsables de ejecución': responsables,
+      'Monitorear en Panel de Control': document.getElementById('f-monitorear').checked ? 'Sí' : 'No'
+    };
+    if (id) registro.id = id;
+
+    setStatus(statusEl, 'Guardando...', '');
+    fetch(APP_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ tabla: 'FODA', accion: id ? 'actualizar' : 'crear', registro: registro, usuario: USUARIO, clave: APP_KEY })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) { setStatus(statusEl, 'Error: ' + data.error, 'err'); return; }
+        setStatus(statusEl, 'Guardado correctamente.', 'ok');
+        form.reset();
+        document.getElementById('f-id').value = '';
+        formTitle.textContent = 'Nuevo ítem FODA';
+        btnCancelar.style.display = 'none';
+        cargarTodo();
+      })
+      .catch(function (err) { setStatus(statusEl, 'Error de conexión: ' + err.message, 'err'); });
+  });
+
+  btnCancelar.addEventListener('click', function () {
+    form.reset();
+    document.getElementById('f-id').value = '';
+    formTitle.textContent = 'Nuevo ítem FODA';
+    btnCancelar.style.display = 'none';
+  });
+
+  window.editarItem = function (id) {
+    const r = itemsFoda.find(function (x) { return x.id === id; });
+    if (!r) return;
+    document.getElementById('f-id').value = r.id;
+    document.getElementById('f-categoria').value = r['Categoría'] || '';
+    document.getElementById('f-ambito').value = r['Ámbito'] || '';
+    document.getElementById('f-obra').value = r['Obra'] || '';
+    document.getElementById('f-descripcion').value = r['Descripción'] || '';
+    document.getElementById('f-prob').value = r['Probabilidad'] || '';
+    document.getElementById('f-impacto').value = r['Impacto'] || '';
+    document.getElementById('f-monitorear').checked = r['Monitorear en Panel de Control'] === 'Sí';
+    document.getElementById('f-responsables').value = r['Responsables de ejecución'] || '';
+    formTitle.textContent = 'Editando ítem FODA';
+    btnCancelar.style.display = 'inline-block';
+    document.querySelector('.tab-btn[data-tab="carga"]').click();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // ---- VISTA (4 cuadrantes) ----
+  function renderVista() {
+    ['Fortaleza', 'Debilidad', 'Oportunidad', 'Amenaza'].forEach(function (cat) {
+      const cont = document.getElementById('q-' + cat);
+      const items = itemsFoda.filter(function (x) { return x['Categoría'] === cat; });
+      if (!items.length) { cont.innerHTML = '<div class="quad-empty">Sin ítems aún.</div>'; return; }
+      cont.innerHTML = items.map(function (r) {
+        const crit = r['Criticidad (P x I)'];
+        const fechaEdicion = r['modificado_fecha'] || r['creado_fecha'] || '';
+        return '<div class="quad-item" onclick="editarItem(\'' + r.id + '\')" style="cursor:pointer;">' +
+          escapeHtml(r['Descripción']) +
+          (crit ? '<span class="crit-badge">Crit. ' + crit + '</span>' : '') +
+          '<span class="meta">' + (r['Ámbito'] || '') + (r['Obra'] ? ' · ' + escapeHtml(r['Obra']) : '') + '</span>' +
+          (r['Responsables de ejecución'] ? '<span class="meta">' + escapeHtml(r['Responsables de ejecución']) + '</span>' : '') +
+          (fechaEdicion ? '<span class="meta">Editado: ' + formatearFecha(fechaEdicion) + '</span>' : '') +
+          '</div>';
+      }).join('');
+    });
+  }
+
+  function formatearFecha(iso) {
+    if (!iso) return '-';
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+
+  // ---- CRUCE FODA ----
+  function poblarSelectsCruce() {
+    const internos = itemsFoda.filter(function (x) { return x['Categoría'] === 'Fortaleza' || x['Categoría'] === 'Debilidad'; });
+    const externos = itemsFoda.filter(function (x) { return x['Categoría'] === 'Oportunidad' || x['Categoría'] === 'Amenaza'; });
+    const selInt = document.getElementById('cx-interno');
+    const selExt = document.getElementById('cx-externo');
+    selInt.innerHTML = '<option value="">Selecciona...</option>' + internos.map(function (r) {
+      return '<option value="' + r.id + '">[' + r['Categoría'] + '] ' + escapeHtml(r['Descripción']).slice(0, 60) + '</option>';
+    }).join('');
+    selExt.innerHTML = '<option value="">Selecciona...</option>' + externos.map(function (r) {
+      return '<option value="' + r.id + '">[' + r['Categoría'] + '] ' + escapeHtml(r['Descripción']).slice(0, 60) + '</option>';
+    }).join('');
+  }
+
+  function tipoCruce(catInterna, catExterna) {
+    if (catInterna === 'Fortaleza' && catExterna === 'Oportunidad') return 'FO';
+    if (catInterna === 'Fortaleza' && catExterna === 'Amenaza') return 'FA';
+    if (catInterna === 'Debilidad' && catExterna === 'Oportunidad') return 'DO';
+    if (catInterna === 'Debilidad' && catExterna === 'Amenaza') return 'DA';
+    return '?';
+  }
+
+  function renderSugeridos() {
+    const internos = itemsFoda.filter(function (x) { return (x['Categoría'] === 'Fortaleza' || x['Categoría'] === 'Debilidad') && x['Criticidad (P x I)']; })
+      .sort(function (a, b) { return (b['Criticidad (P x I)'] || 0) - (a['Criticidad (P x I)'] || 0); }).slice(0, 3);
+    const externos = itemsFoda.filter(function (x) { return (x['Categoría'] === 'Oportunidad' || x['Categoría'] === 'Amenaza') && x['Criticidad (P x I)']; })
+      .sort(function (a, b) { return (b['Criticidad (P x I)'] || 0) - (a['Criticidad (P x I)'] || 0); }).slice(0, 3);
+
+    const cont = document.getElementById('sugeridos');
+    if (!internos.length || !externos.length) {
+      cont.innerHTML = '<div class="cross-empty">Carga al menos un ítem interno y uno externo con Probabilidad/Impacto para ver sugerencias.</div>';
+      return;
+    }
+    let html = '';
+    internos.forEach(function (fi) {
+      externos.forEach(function (fe) {
+        const yaExiste = crucesFoda.some(function (c) { return c.factor_interno_id === fi.id && c.factor_externo_id === fe.id; });
+        if (yaExiste) return;
+        const tipo = tipoCruce(fi['Categoría'], fe['Categoría']);
+        html += '<div class="cross-card">' +
+          '<span class="tipo-tag">' + tipo + '</span>' +
+          '<div class="cross-pair"><span class="lbl">' + fi['Categoría'] + ':</span> ' + escapeHtml(fi['Descripción']) + '</div>' +
+          '<div class="cross-pair"><span class="lbl">' + fe['Categoría'] + ':</span> ' + escapeHtml(fe['Descripción']) + '</div>' +
+          '<textarea placeholder="Estrategia resultante..." id="sug-' + fi.id + '-' + fe.id + '" style="margin-bottom:8px;"></textarea>' +
+          '<button type="button" class="btn-primary btn-small" onclick="guardarSugerido(\'' + fi.id + '\',\'' + fe.id + '\',\'' + tipo + '\')">Guardar cruce</button>' +
+          '</div>';
+      });
+    });
+    cont.innerHTML = html || '<div class="cross-empty">No hay más combinaciones nuevas por sugerir.</div>';
+  }
+
+  window.guardarSugerido = function (internoId, externoId, tipo) {
+    const estrategia = document.getElementById('sug-' + internoId + '-' + externoId).value;
+    guardarCruce(internoId, externoId, tipo, estrategia, 'Automático');
+  };
+
+  document.getElementById('btn-guardar-cruce').addEventListener('click', function () {
+    const internoId = document.getElementById('cx-interno').value;
+    const externoId = document.getElementById('cx-externo').value;
+    const estrategia = document.getElementById('cx-estrategia').value;
+    if (!internoId || !externoId) { setStatus(document.getElementById('status-cruce'), 'Elige ambos factores.', 'err'); return; }
+    const fi = itemsFoda.find(function (x) { return x.id === internoId; });
+    const fe = itemsFoda.find(function (x) { return x.id === externoId; });
+    guardarCruce(internoId, externoId, tipoCruce(fi['Categoría'], fe['Categoría']), estrategia, 'Manual');
+  });
+
+  function guardarCruce(internoId, externoId, tipo, estrategia, origen) {
+    const statusCruceEl = document.getElementById('status-cruce');
+    setStatus(statusCruceEl, 'Guardando...', '');
+    fetch(APP_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        tabla: 'Cruce_FODA', accion: 'crear',
+        registro: {
+          factor_interno_id: internoId, factor_externo_id: externoId,
+          tipo_cruce: tipo, origen: origen,
+          'Estrategia resultante': estrategia, 'Estado': 'Sugerido'
+        },
+        usuario: USUARIO,
+        clave: APP_KEY
+      })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) { setStatus(statusCruceEl, 'Error: ' + data.error, 'err'); return; }
+        setStatus(statusCruceEl, 'Cruce guardado.', 'ok');
+        document.getElementById('cx-estrategia').value = '';
+        cargarTodo();
+      })
+      .catch(function (err) { setStatus(statusCruceEl, 'Error de conexión: ' + err.message, 'err'); });
+  }
+
+  function renderCrucesGuardados() {
+    const cont = document.getElementById('cruces-guardados');
+    if (!crucesFoda.length) { cont.innerHTML = '<div class="cross-empty">Aún no hay cruces guardados.</div>'; return; }
+    cont.innerHTML = crucesFoda.map(function (c) {
+      const fi = itemsFoda.find(function (x) { return x.id === c.factor_interno_id; });
+      const fe = itemsFoda.find(function (x) { return x.id === c.factor_externo_id; });
+      return '<div class="cross-card">' +
+        '<span class="tipo-tag">' + c.tipo_cruce + '</span>' +
+        '<span class="meta" style="font-size:10.5px; color:#8A9A9E;">' + (c.origen || '') + '</span>' +
+        '<div class="cross-pair"><span class="lbl">Interno:</span> ' + (fi ? escapeHtml(fi['Descripción']) : '(no encontrado)') + '</div>' +
+        '<div class="cross-pair"><span class="lbl">Externo:</span> ' + (fe ? escapeHtml(fe['Descripción']) : '(no encontrado)') + '</div>' +
+        '<div class="cross-pair"><span class="lbl">Estrategia:</span> ' + escapeHtml(c['Estrategia resultante']) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function renderCruzada() { renderSugeridos(); renderCrucesGuardados(); }
+
+  cargarTodo();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Riesgos y Oportunidades · Gestión Integrada ISO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#003B49; --teal-light:#0A5568; --orange:#CF4520;
+    --cream:#F7F5F0; --ink:#12222A; --line:#DCE3E1; --card-bg:#FFFFFF; --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--cream); color:var(--ink); font-family:'Space Grotesk',sans-serif; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  header{background:var(--teal); color:#fff; padding:20px 24px;}
+  .header-inner{max-width:1040px; margin:0 auto; display:flex; align-items:center; gap:14px;}
+  .back{color:#fff; opacity:.8; text-decoration:none; font-size:13px;}
+  .back:hover{opacity:1;}
+  h1{margin:0; font-size:18px; font-weight:600;}
+  .code-pill{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:rgba(255,255,255,.12); padding:3px 9px; border-radius:999px; margin-left:auto;}
+  main{max-width:1040px; margin:0 auto; padding:28px 24px 64px;}
+
+  .tabs{display:flex; gap:6px; margin-bottom:20px; border-bottom:1px solid var(--line);}
+  .tab-btn{background:none; border:none; padding:10px 16px; font-family:'Space Grotesk',sans-serif; font-size:13.5px; font-weight:500; color:#8A9A9E; cursor:pointer; border-bottom:2px solid transparent;}
+  .tab-btn.active{color:var(--teal); border-bottom-color:var(--orange);}
+  .tab-panel{display:none;} .tab-panel.active{display:block;}
+
+  .panel{background:var(--card-bg); border:1px solid var(--line); border-radius:var(--radius); padding:22px; margin-bottom:22px;}
+  .panel h2{margin:0 0 4px; font-size:16px; font-weight:600;}
+  .panel .sub{margin:0 0 18px; font-size:12.5px; color:#6B7A7E;}
+  .subhead{font-family:'JetBrains Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--teal-light); margin:20px 0 4px;}
+
+  label{display:block; font-size:12.5px; font-weight:500; color:#3F4E52; margin-bottom:5px; margin-top:14px;}
+  label:first-of-type{margin-top:0;}
+  input[type=text], textarea, select{
+    width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:8px;
+    font-family:'Space Grotesk',sans-serif; font-size:14px; color:var(--ink); background:#FCFCFB;
+  }
+  textarea{resize:vertical; min-height:52px;}
+  input:focus, textarea:focus, select:focus{outline:2px solid var(--teal-light); outline-offset:1px; border-color:var(--teal-light);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  .row5{display:grid; grid-template-columns:repeat(5,1fr); gap:8px;}
+  @media (max-width:640px){.row2,.row3,.row5{grid-template-columns:1fr 1fr;}}
+
+  .checkbox-row{display:flex; flex-wrap:wrap; gap:14px; margin-top:8px;}
+  .checkbox-row label{display:flex; align-items:center; gap:6px; font-size:13px; margin:0;}
+  .checkbox-row input{width:auto;}
+
+  .actions{display:flex; align-items:center; gap:12px; margin-top:18px;}
+  button{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13.5px; padding:10px 18px; border-radius:8px; border:none; cursor:pointer;}
+  .btn-primary{background:var(--orange); color:#fff;}
+  .btn-primary:hover{background:#B93B1A;}
+  .btn-secondary{background:transparent; color:var(--teal-light); border:1px solid var(--line);}
+  .status{font-size:12.5px; color:#6B7A7E;}
+  .status.ok{color:#2C6E45;}
+  .status.err{color:#B93B1A;}
+
+  .help-icon{display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:50%; background:var(--teal-light); color:#fff; font-size:10.5px; font-weight:700; cursor:pointer; vertical-align:middle; margin-left:4px;}
+  .modal-overlay{display:none; position:fixed; inset:0; background:rgba(18,34,42,.55); align-items:center; justify-content:center; z-index:50; padding:20px;}
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:#fff; border-radius:14px; max-width:720px; width:100%; max-height:85vh; overflow-y:auto; padding:24px;}
+  .modal-box h3{margin:0 0 4px; font-size:16px;}
+  .modal-box .modal-sub{margin:0 0 16px; font-size:12.5px; color:#6B7A7E;}
+  .modal-close{float:right; background:none; border:none; font-size:20px; cursor:pointer; color:#8A9A9E; padding:0;}
+  .scale-row{display:grid; grid-template-columns:34px 90px 1fr; gap:10px; padding:9px 0; border-bottom:1px solid #EEF1F0; font-size:12.5px; align-items:start;}
+  .scale-row .n{font-family:'JetBrains Mono',monospace; font-weight:700; text-align:center; border-radius:6px; padding:3px 0; color:#fff; align-self:start;}
+  .scale-row .n.n1{background:#2C6E45;} .scale-row .n.n2{background:#5C8F3F;} .scale-row .n.n3{background:#C8973A;}
+  .scale-row .n.n4{background:#CF4520;} .scale-row .n.n5{background:#8A1F1F;}
+  .scale-row .lbl{font-weight:600;}
+  .scale-row .desc{color:#4B5D63; line-height:1.4;}
+
+  /* ---- Registro / listado ---- */
+  .filters{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+  .filters select{width:auto; min-width:150px;}
+  .reg-card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:12px; background:#FCFCFB; cursor:pointer;}
+  .reg-card:hover{border-color:var(--teal-light);}
+  .reg-top{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;}
+  .tag{font-size:10px; padding:2px 8px; border-radius:999px; font-family:'JetBrains Mono',monospace;}
+  .tag.riesgo{background:#FBEAE5; color:#B93B1A;}
+  .tag.oportunidad{background:#EAF5EE; color:#2C6E45;}
+  .tag.nivel{background:#12222A; color:#fff;}
+  .tag.ambito{background:#EAF1F1; color:var(--teal-light);}
+  .reg-desc{font-size:13.5px; font-weight:600; margin-bottom:4px;}
+  .reg-meta{font-size:11px; color:#8A9A9E; font-family:'JetBrains Mono',monospace;}
+  .empty{padding:24px; text-align:center; color:#8A9A9E; font-size:13px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="back" href="index.html">&larr; Inicio</a>
+    <h1>Riesgos y Oportunidades</h1>
+    <span class="code-pill mono">DOC-SGC-010</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="carga">Nuevo registro</button>
+    <button class="tab-btn" data-tab="registro">Registro consolidado</button>
+  </div>
+
+  <!-- ==== TAB CARGA ==== -->
+  <div class="tab-panel active" id="tab-carga">
+    <div class="panel">
+      <h2 id="form-title">Nuevo Riesgo / Oportunidad</h2>
+      <p class="sub">Mismos campos y metodología de tu documento — probabilidad, consecuencia, medidas de control y plan de acción.</p>
+
+      <form id="form-r">
+        <input type="hidden" id="f-id" value="">
+
+        <div class="subhead">Identificación</div>
+        <div class="row3">
+          <div>
+            <label for="f-tipo">Tipo</label>
+            <select id="f-tipo" required onchange="actualizarAyudaDinamica()">
+              <option value="">Selecciona...</option>
+              <option value="Riesgo">Riesgo</option>
+              <option value="Oportunidad">Oportunidad</option>
+            </select>
+          </div>
+          <div>
+            <label for="f-origen">Origen</label>
+            <select id="f-origen">
+              <option value="">-</option>
+              <option value="FODA">FODA</option>
+              <option value="PESTEL">PESTEL</option>
+              <option value="Hallazgo">Hallazgo</option>
+              <option value="Manual">Manual</option>
+            </select>
+          </div>
+          <div>
+            <label for="f-ambito">Ámbito</label>
+            <select id="f-ambito" required>
+              <option value="">Selecciona...</option>
+              <option value="Terreno">Terreno</option>
+              <option value="Oficina">Oficina</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div>
+            <label for="f-obra">Obra (opcional)</label>
+            <input type="text" id="f-obra" placeholder="Solo si es específico de un proyecto">
+          </div>
+          <div></div>
+        </div>
+
+        <label for="f-descripcion">Descripción</label>
+        <textarea id="f-descripcion" required></textarea>
+
+        <div class="subhead">Evaluación inicial</div>
+        <div class="row2">
+          <div>
+            <label for="f-prob">Probabilidad (P) <span class="help-icon" onclick="mostrarAyuda('prob')">?</span></label>
+            <select id="f-prob" required><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+          </div>
+          <div>
+            <label for="f-consec">Consecuencia (C) <span class="help-icon" onclick="mostrarAyuda('consec')">?</span></label>
+            <select id="f-consec" required><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+          </div>
+        </div>
+        <div class="row2">
+          <div><label>Valor (P x C)</label><input type="text" id="f-valor" readonly style="background:#EEF1F0;"></div>
+          <div><label>Nivel</label><input type="text" id="f-nivel" readonly style="background:#EEF1F0;"></div>
+        </div>
+
+        <div class="subhead">Medidas de control existentes</div>
+        <label for="f-medidas">Descripción de medidas de control</label>
+        <textarea id="f-medidas"></textarea>
+        <div class="row3">
+          <div>
+            <label for="f-fortaleza">Fortaleza (F) 1-5</label>
+            <select id="f-fortaleza"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+          </div>
+          <div>
+            <label for="f-madurez">Grado madurez (G) 1-5</label>
+            <select id="f-madurez"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+          </div>
+          <div>
+            <label>Valor medida (F+G)</label>
+            <input type="text" id="f-valormedida" readonly style="background:#EEF1F0;">
+          </div>
+        </div>
+        <div class="row2">
+          <div>
+            <label for="f-efectividad">Efectividad</label>
+            <select id="f-efectividad"><option value="">-</option><option>Baja</option><option>Media</option><option>Alta</option></select>
+          </div>
+          <div>
+            <label for="f-riesgofinal">Riesgo final</label>
+            <input type="text" id="f-riesgofinal" placeholder="Nivel resultante tras medidas">
+          </div>
+        </div>
+
+        <div id="bloque-opciones-manejo">
+          <div class="subhead">Opciones de manejo (solo Riesgo)</div>
+          <div class="checkbox-row">
+            <label><input type="checkbox" id="f-evitar"> Evitar</label>
+            <label><input type="checkbox" id="f-eliminar"> Eliminar</label>
+            <label><input type="checkbox" id="f-cambiar"> Cambiar</label>
+            <label><input type="checkbox" id="f-compartir"> Compartir</label>
+            <label><input type="checkbox" id="f-asumir"> Asumir</label>
+          </div>
+        </div>
+
+        <div class="subhead">Plan de acción</div>
+        <label for="f-accion">Acción</label>
+        <textarea id="f-accion"></textarea>
+        <div class="row3">
+          <div><label for="f-responsable">Responsable</label><input type="text" id="f-responsable"></div>
+          <div><label for="f-plazo">Plazo</label><input type="text" id="f-plazo"></div>
+          <div><label for="f-estado">Estado</label>
+            <select id="f-estado">
+              <option value="">-</option>
+              <option>Pendiente</option><option>En proceso</option><option>Cerrado</option><option>Vencido</option>
+            </select>
+          </div>
+        </div>
+        <label for="f-eficacia">¿Cómo se evalúa la eficacia?</label>
+        <textarea id="f-eficacia"></textarea>
+        <div class="row2">
+          <div><label for="f-indicador">Indicador</label><input type="text" id="f-indicador"></div>
+          <div><label for="f-meta">Meta</label><input type="text" id="f-meta"></div>
+        </div>
+
+        <label for="f-responsables">Responsables de ejecución (mínimo 2 personas, separadas por coma)</label>
+        <input type="text" id="f-responsables" placeholder="Ej: Carlos Braun, Cristián Menéndez" required>
+
+        <label style="display:flex; align-items:center; gap:8px; margin-top:16px;">
+          <input type="checkbox" id="f-monitorear" style="width:auto;">
+          Monitorear en Panel de Control
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary">Guardar</button>
+          <button type="button" class="btn-secondary" id="btn-cancelar" style="display:none;">Cancelar edición</button>
+          <span class="status" id="status"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==== TAB REGISTRO ==== -->
+  <div class="tab-panel" id="tab-registro">
+    <div class="panel">
+      <h2>Registro consolidado</h2>
+      <p class="sub">Todos los riesgos y oportunidades, con filtros rápidos.</p>
+      <div class="filters">
+        <select id="filtro-tipo"><option value="">Todos los tipos</option><option>Riesgo</option><option>Oportunidad</option></select>
+        <select id="filtro-ambito"><option value="">Todos los ámbitos</option><option>Terreno</option><option>Oficina</option></select>
+        <select id="filtro-estado"><option value="">Todos los estados</option><option>Pendiente</option><option>En proceso</option><option>Cerrado</option><option>Vencido</option></select>
+      </div>
+      <div id="lista-registros"></div>
+    </div>
+  </div>
+
+</main>
+
+<div class="modal-overlay" id="modal-ayuda">
+  <div class="modal-box">
+    <button class="modal-close" onclick="cerrarAyuda()">&times;</button>
+    <h3 id="modal-title">Escala</h3>
+    <p class="modal-sub" id="modal-sub"></p>
+    <div id="modal-contenido"></div>
+  </div>
+</div>
+
+<script>
+  const APP_URL = 'https://script.google.com/macros/s/AKfycbzCquDf6sVRaGePNemoq1CMlZN9wdivpRmCw7omiSkgHiIcWIcf8jhC5t9Lc01UhMt7hw/exec';
+  const APP_KEY = 'senercom-sgi-7x9K2m';
+  const TABLA = 'Riesgos_Oportunidades';
+  const USUARIO = 'Carlos Braun';
+  let items = [];
+
+  // ---- Tablas oficiales (DOC-SGC-010) ----
+  const TABLA_PROB_RIESGO = [
+    { n: 1, lbl: 'Muy Baja', desc: 'Insignificante, sucede sólo en escenarios excepcionales. Nunca o no se ha presentado en los últimos 5 años.' },
+    { n: 2, lbl: 'Baja', desc: 'El riesgo podría ocurrir en algún momento, es poco común o frecuente. Al menos 1 vez en los últimos 5 años.' },
+    { n: 3, lbl: 'Moderada', desc: 'El riesgo puede ocurrir en algún momento. Al menos 1 vez en los últimos 2 años.' },
+    { n: 4, lbl: 'Alta', desc: 'El riesgo ocurrirá en la mayoría de las circunstancias. Al menos 1 vez en el último año.' },
+    { n: 5, lbl: 'Muy Alta', desc: 'Se espera que el riesgo ocurra en la mayoría de las circunstancias. Más de 1 vez al año.' }
+  ];
+  const TABLA_CONSEC_RIESGO = [
+    { n: 1, lbl: 'Bajo', desc: 'No genera pérdidas significativas ($0 a $500.000) ni compromete la imagen pública. Perjuicio tolerable.' },
+    { n: 2, lbl: 'Menor', desc: 'Pérdidas financieras de $500.001 a $5.000.000, impacto menor en presupuesto e imagen.' },
+    { n: 3, lbl: 'Moderado', desc: 'Pérdidas de $5.000.001 a $20.000.000. Retrasa el cumplimiento de objetivos.' },
+    { n: 4, lbl: 'Mayor', desc: 'Pérdidas de $20.000.001 a $50.000.000. Daña significativamente la continuidad operacional.' },
+    { n: 5, lbl: 'Crítico', desc: 'Pérdidas superiores a $50.000.000, impacto catastrófico. Riesgo para la continuidad del negocio.' }
+  ];
+  const TABLA_PROB_OPORTUNIDAD = [
+    { n: 1, lbl: 'Muy poco probable', desc: 'Muy poco probable (inexistente) por los altos costos frente al beneficio. No ocurre.' },
+    { n: 2, lbl: 'Largo plazo', desc: 'Relativamente probable a largo plazo (5 años).' },
+    { n: 3, lbl: 'Mediano plazo', desc: 'Se prevé que ocurra a mediano plazo (3 años).' },
+    { n: 4, lbl: 'Corto plazo', desc: 'Se prevé a corto plazo, beneficio alto respecto al costo (1 año).' },
+    { n: 5, lbl: 'Muy corto plazo', desc: 'Se prevé a corto plazo, beneficio muy alto respecto al costo (6 meses).' }
+  ];
+  const TABLA_CONSEC_OPORTUNIDAD = [
+    { n: 1, lbl: 'Insignificante', desc: 'Insignificantes beneficios. Ganancias no significativas ($0 a $500.000).' },
+    { n: 2, lbl: 'Leve', desc: 'Leves beneficios. Ganancias entre $500.001 y $5.000.000.' },
+    { n: 3, lbl: 'Mediano', desc: 'Medianos beneficios que afectan a un área. Ganancias entre $5.000.001 y $20.000.000.' },
+    { n: 4, lbl: 'Alto', desc: 'Beneficios que afectan a toda la organización. Ganancias entre $20.000.001 y $50.000.000.' },
+    { n: 5, lbl: 'Muy alto', desc: 'Altos beneficios en toda la organización. Ganancias sobre los $50.000.000.' }
+  ];
+
+  function renderTablaAyuda(filas) {
+    return filas.map(function (f) {
+      return '<div class="scale-row"><div class="n n' + f.n + '">' + f.n + '</div><div class="lbl">' + f.lbl + '</div><div class="desc">' + f.desc + '</div></div>';
+    }).join('');
+  }
+
+  window.mostrarAyuda = function (campo) {
+    const tipo = document.getElementById('f-tipo').value;
+    const esOportunidad = tipo === 'Oportunidad';
+    let filas, titulo;
+    if (campo === 'prob') { filas = esOportunidad ? TABLA_PROB_OPORTUNIDAD : TABLA_PROB_RIESGO; titulo = 'Probabilidad (P)'; }
+    else { filas = esOportunidad ? TABLA_CONSEC_OPORTUNIDAD : TABLA_CONSEC_RIESGO; titulo = 'Consecuencia (C)'; }
+    document.getElementById('modal-title').textContent = titulo;
+    document.getElementById('modal-sub').textContent = tipo ? 'Escala para ' + tipo : 'Selecciona primero el Tipo para ver la escala exacta.';
+    document.getElementById('modal-contenido').innerHTML = renderTablaAyuda(filas);
+    document.getElementById('modal-ayuda').classList.add('open');
+  };
+  window.cerrarAyuda = function () { document.getElementById('modal-ayuda').classList.remove('open'); };
+  document.getElementById('modal-ayuda').addEventListener('click', function (e) { if (e.target === this) cerrarAyuda(); });
+
+  window.actualizarAyudaDinamica = function () {
+    const esRiesgo = document.getElementById('f-tipo').value === 'Riesgo';
+    document.getElementById('bloque-opciones-manejo').style.display = esRiesgo ? 'block' : 'none';
+  };
+
+  // ---- Cálculo automático Valor / Nivel ----
+  function nivelDeValor(v) {
+    if (v <= 4) return 'Bajo';
+    if (v <= 9) return 'Moderado';
+    if (v <= 16) return 'Alto';
+    return 'Crítico';
+  }
+  function recalcular() {
+    const p = Number(document.getElementById('f-prob').value) || 0;
+    const c = Number(document.getElementById('f-consec').value) || 0;
+    const valor = p && c ? p * c : '';
+    document.getElementById('f-valor').value = valor;
+    document.getElementById('f-nivel').value = valor ? nivelDeValor(valor) : '';
+
+    const f = Number(document.getElementById('f-fortaleza').value) || 0;
+    const g = Number(document.getElementById('f-madurez').value) || 0;
+    document.getElementById('f-valormedida').value = (f || g) ? (f + g) : '';
+  }
+  ['f-prob', 'f-consec', 'f-fortaleza', 'f-madurez'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', recalcular);
+  });
+
+  function escapeHtml(str) {
+    if (str === undefined || str === null) return '';
+    return String(str).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
+  }
+  function formatearFecha(iso) {
+    if (!iso) return '-';
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+
+  function listar() {
+    const callbackName = 'cb_' + Date.now();
+    window[callbackName] = function (data) {
+      items = data.registros || [];
+      renderLista();
+      delete window[callbackName];
+      document.body.removeChild(script);
+    };
+    const script = document.createElement('script');
+    script.src = APP_URL + '?accion=listar&tabla=' + TABLA + '&clave=' + APP_KEY + '&callback=' + callbackName;
+    document.body.appendChild(script);
+  }
+
+  // ---- Tabs ----
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'registro') renderLista();
+    });
+  });
+  ['filtro-tipo', 'filtro-ambito', 'filtro-estado'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', renderLista);
+  });
+
+  function renderLista() {
+    const cont = document.getElementById('lista-registros');
+    const ft = document.getElementById('filtro-tipo').value;
+    const fa = document.getElementById('filtro-ambito').value;
+    const fe = document.getElementById('filtro-estado').value;
+    const filtrados = items.filter(function (r) {
+      return (!ft || r['Tipo'] === ft) && (!fa || r['Ámbito'] === fa) && (!fe || r['Estado'] === fe);
+    });
+    if (!filtrados.length) { cont.innerHTML = '<div class="empty">No hay registros con esos filtros.</div>'; return; }
+    cont.innerHTML = filtrados.map(function (r) {
+      const tipoClass = r['Tipo'] === 'Riesgo' ? 'riesgo' : 'oportunidad';
+      const fechaEdicion = r['modificado_fecha'] || r['creado_fecha'] || '';
+      return '<div class="reg-card" onclick="editar(\'' + r.id + '\')">' +
+        '<div class="reg-top">' +
+        '<span class="tag ' + tipoClass + '">' + (r['Tipo'] || '') + '</span>' +
+        (r['Nivel'] ? '<span class="tag nivel">' + r['Nivel'] + '</span>' : '') +
+        '<span class="tag ambito">' + (r['Ámbito'] || '') + (r['Obra'] ? ' · ' + escapeHtml(r['Obra']) : '') + '</span>' +
+        (r['Estado'] ? '<span class="tag ambito">' + r['Estado'] + '</span>' : '') +
+        '</div>' +
+        '<div class="reg-desc">' + escapeHtml(r['Descripción']) + '</div>' +
+        '<div class="reg-meta">Origen: ' + (r['Origen'] || '-') + ' · Responsable: ' + escapeHtml(r['Responsable'] || '-') + ' · Plazo: ' + escapeHtml(r['Plazo'] || '-') + '</div>' +
+        '<div class="reg-meta">Ejecutan: ' + escapeHtml(r['Responsables de ejecución'] || '-') + ' · Editado: ' + formatearFecha(fechaEdicion) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  window.editar = function (id) {
+    const r = items.find(function (x) { return x.id === id; });
+    if (!r) return;
+    document.getElementById('f-id').value = r.id;
+    document.getElementById('f-tipo').value = r['Tipo'] || '';
+    document.getElementById('f-origen').value = r['Origen'] || '';
+    document.getElementById('f-ambito').value = r['Ámbito'] || '';
+    document.getElementById('f-obra').value = r['Obra'] || '';
+    document.getElementById('f-descripcion').value = r['Descripción'] || '';
+    document.getElementById('f-prob').value = r['Probabilidad (P)'] || '';
+    document.getElementById('f-consec').value = r['Consecuencia (C)'] || '';
+    document.getElementById('f-medidas').value = r['Descripción medidas de control'] || '';
+    document.getElementById('f-fortaleza').value = r['Fortaleza (F)'] || '';
+    document.getElementById('f-madurez').value = r['Grado madurez (G)'] || '';
+    document.getElementById('f-efectividad').value = r['Efectividad'] || '';
+    document.getElementById('f-riesgofinal').value = r['Riesgo final'] || '';
+    document.getElementById('f-evitar').checked = r['Evitar'] === 'Sí';
+    document.getElementById('f-eliminar').checked = r['Eliminar'] === 'Sí';
+    document.getElementById('f-cambiar').checked = r['Cambiar'] === 'Sí';
+    document.getElementById('f-compartir').checked = r['Compartir'] === 'Sí';
+    document.getElementById('f-asumir').checked = r['Asumir'] === 'Sí';
+    document.getElementById('f-accion').value = r['Acción'] || '';
+    document.getElementById('f-responsable').value = r['Responsable'] || '';
+    document.getElementById('f-plazo').value = r['Plazo'] || '';
+    document.getElementById('f-estado').value = r['Estado'] || '';
+    document.getElementById('f-eficacia').value = r['¿Cómo se evalúa la eficacia?'] || '';
+    document.getElementById('f-indicador').value = r['Indicador'] || '';
+    document.getElementById('f-meta').value = r['Meta'] || '';
+    document.getElementById('f-responsables').value = r['Responsables de ejecución'] || '';
+    document.getElementById('f-monitorear').checked = r['Monitorear en Panel de Control'] === 'Sí';
+    recalcular();
+    actualizarAyudaDinamica();
+    document.getElementById('form-title').textContent = 'Editando registro';
+    document.getElementById('btn-cancelar').style.display = 'inline-block';
+    document.querySelector('.tab-btn[data-tab="carga"]').click();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  document.getElementById('btn-cancelar').addEventListener('click', function () {
+    document.getElementById('form-r').reset();
+    document.getElementById('f-id').value = '';
+    document.getElementById('form-title').textContent = 'Nuevo Riesgo / Oportunidad';
+    this.style.display = 'none';
+    recalcular();
+  });
+
+  const statusEl = document.getElementById('status');
+  function setStatus(msg, tipo) { statusEl.textContent = msg; statusEl.className = 'status' + (tipo ? ' ' + tipo : ''); }
+
+  document.getElementById('form-r').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const responsables = document.getElementById('f-responsables').value;
+    if (responsables.split(',').filter(function (n) { return n.trim(); }).length < 2) {
+      setStatus('Debes indicar al menos 2 responsables de ejecución, separados por coma.', 'err');
+      return;
+    }
+    const id = document.getElementById('f-id').value;
+    const registro = {
+      'Origen': document.getElementById('f-origen').value,
+      'Tipo': document.getElementById('f-tipo').value,
+      'Descripción': document.getElementById('f-descripcion').value,
+      'Ámbito': document.getElementById('f-ambito').value,
+      'Obra': document.getElementById('f-obra').value,
+      'Probabilidad (P)': document.getElementById('f-prob').value,
+      'Consecuencia (C)': document.getElementById('f-consec').value,
+      'Valor (PxC)': document.getElementById('f-valor').value,
+      'Nivel': document.getElementById('f-nivel').value,
+      'Descripción medidas de control': document.getElementById('f-medidas').value,
+      'Fortaleza (F)': document.getElementById('f-fortaleza').value,
+      'Grado madurez (G)': document.getElementById('f-madurez').value,
+      'Valor medida (F+G)': document.getElementById('f-valormedida').value,
+      'Efectividad': document.getElementById('f-efectividad').value,
+      'Riesgo final': document.getElementById('f-riesgofinal').value,
+      'Evitar': document.getElementById('f-evitar').checked ? 'Sí' : '',
+      'Eliminar': document.getElementById('f-eliminar').checked ? 'Sí' : '',
+      'Cambiar': document.getElementById('f-cambiar').checked ? 'Sí' : '',
+      'Compartir': document.getElementById('f-compartir').checked ? 'Sí' : '',
+      'Asumir': document.getElementById('f-asumir').checked ? 'Sí' : '',
+      'Acción': document.getElementById('f-accion').value,
+      'Responsable': document.getElementById('f-responsable').value,
+      'Plazo': document.getElementById('f-plazo').value,
+      '¿Cómo se evalúa la eficacia?': document.getElementById('f-eficacia').value,
+      'Indicador': document.getElementById('f-indicador').value,
+      'Meta': document.getElementById('f-meta').value,
+      'Estado': document.getElementById('f-estado').value,
+      'Responsables de ejecución': responsables,
+      'Monitorear en Panel de Control': document.getElementById('f-monitorear').checked ? 'Sí' : 'No'
+    };
+    if (id) registro.id = id;
+
+    setStatus('Guardando...', '');
+    fetch(APP_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ tabla: TABLA, accion: id ? 'actualizar' : 'crear', registro: registro, usuario: USUARIO, clave: APP_KEY })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) { setStatus('Error: ' + data.error, 'err'); return; }
+        setStatus('Guardado correctamente.', 'ok');
+        document.getElementById('form-r').reset();
+        document.getElementById('f-id').value = '';
+        document.getElementById('form-title').textContent = 'Nuevo Riesgo / Oportunidad';
+        document.getElementById('btn-cancelar').style.display = 'none';
+        recalcular();
+        listar();
+      })
+      .catch(function (err) { setStatus('Error de conexión: ' + err.message, 'err'); });
+  });
+
+  actualizarAyudaDinamica();
+  listar();
+</script>
+
+</body>
+</html>
