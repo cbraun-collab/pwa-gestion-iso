@@ -67,6 +67,9 @@
   .empty{padding:30px; text-align:center; color:#8A9A9E; font-size:13px;}
   .edit-link{color:var(--teal-light); font-size:12px; cursor:pointer; text-decoration:underline;}
   .meta-cell{font-size:11px; color:#8A9A9E; font-family:'JetBrains Mono',monospace; line-height:1.5;}
+  .replicar-grid{display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:6px;}
+  .check-inline{display:flex; align-items:center; gap:7px; font-size:12.8px; font-weight:400; color:#3F4E52; margin:0;}
+  .check-inline input{width:auto; margin:0;}
 </style>
 </head>
 <body>
@@ -120,6 +123,18 @@
         <input type="checkbox" id="f-monitorear" style="width:auto;">
         Monitorear en Panel de Control
       </label>
+
+      <div id="replicar-bloque">
+        <label style="margin-top:16px;">Replicar automáticamente a (opcional)</label>
+        <div class="replicar-grid">
+          <label class="check-inline"><input type="checkbox" class="replicar-check" value="FODA"> FODA</label>
+          <label class="check-inline"><input type="checkbox" class="replicar-check" value="PESTEL"> PESTEL</label>
+          <label class="check-inline"><input type="checkbox" class="replicar-check" value="Balance_Scorecard"> Balance Scorecard</label>
+          <label class="check-inline"><input type="checkbox" class="replicar-check" value="Riesgos_Oportunidades"> Riesgos y Oportunidades</label>
+          <label class="check-inline"><input type="checkbox" class="replicar-check" value="Hallazgos"> Hallazgos</label>
+        </div>
+        <p class="sub" style="margin:4px 0 0;">Crea una copia en cada módulo marcado (descripción, responsables). Solo aplica al crear una parte interesada nueva.</p>
+      </div>
 
       <div class="actions">
         <button type="submit" class="btn-primary" id="btn-guardar">Guardar</button>
@@ -222,6 +237,7 @@
     document.getElementById('f-monitorear').checked = r['Monitorear en Panel de Control'] === 'Sí' || r['Monitorear en Panel de Control'] === true;
     formTitle.textContent = 'Editando parte interesada';
     btnCancelar.style.display = 'inline-block';
+    document.getElementById('replicar-bloque').style.display = 'none';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -230,6 +246,7 @@
     document.getElementById('f-id').value = '';
     formTitle.textContent = 'Nueva parte interesada';
     btnCancelar.style.display = 'none';
+    document.getElementById('replicar-bloque').style.display = '';
   });
 
   // ---- Escritura vía POST (text/plain evita el preflight CORS) ----
@@ -252,26 +269,36 @@
     };
     if (id) registro.id = id;
 
+    const replicarA = Array.from(document.querySelectorAll('.replicar-check:checked')).map(function (c) { return c.value; });
+    const payload = {
+      tabla: TABLA,
+      accion: id ? 'actualizar' : 'crear',
+      registro: registro,
+      usuario: USUARIO,
+      clave: APP_KEY
+    };
+    if (!id && replicarA.length) payload.replicar_a = replicarA;
+
     setStatus('Guardando...', '');
     fetch(APP_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({
-        tabla: TABLA,
-        accion: id ? 'actualizar' : 'crear',
-        registro: registro,
-        usuario: USUARIO,
-        clave: APP_KEY
-      })
+      body: JSON.stringify(payload)
     })
       .then(function (res) { return res.json(); })
       .then(function (data) {
         if (data.error) { setStatus('Error: ' + data.error, 'err'); return; }
-        setStatus('Guardado correctamente.', 'ok');
+        let msg = 'Guardado correctamente.';
+        if (data.replicado_en && data.replicado_en.length) {
+          const nombres = data.replicado_en.map(function (r) { return r.error ? (r.tabla + ' (error)') : r.tabla; });
+          msg += ' Replicado en: ' + nombres.join(', ') + '.';
+        }
+        setStatus(msg, 'ok');
         form.reset();
         document.getElementById('f-id').value = '';
         formTitle.textContent = 'Nueva parte interesada';
         btnCancelar.style.display = 'none';
+        document.getElementById('replicar-bloque').style.display = '';
         listar();
       })
       .catch(function (err) { setStatus('Error de conexión: ' + err.message, 'err'); });
