@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compromisos y Medidas · Gestión Integrada ISO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#003B49; --teal-light:#0A5568; --orange:#CF4520;
+    --cream:#F7F5F0; --ink:#12222A; --line:#DCE3E1; --card-bg:#FFFFFF; --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--cream); color:var(--ink); font-family:'Space Grotesk',sans-serif; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  header{background:var(--teal); color:#fff; padding:20px 24px;}
+  .header-inner{max-width:920px; margin:0 auto; display:flex; align-items:center; gap:14px;}
+  .header-logo{height:26px; width:auto;}
+  .back{color:#fff; opacity:.8; text-decoration:none; font-size:13px;}
+  .back:hover{opacity:1;}
+  h1{margin:0; font-size:18px; font-weight:600;}
+  .code-pill{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:rgba(255,255,255,.12); padding:3px 9px; border-radius:999px; margin-left:auto;}
+  main{max-width:920px; margin:0 auto; padding:28px 24px 64px;}
+  .panel{background:var(--card-bg); border:1px solid var(--line); border-radius:var(--radius); padding:22px; margin-bottom:22px;}
+  .panel h2{margin:0 0 4px; font-size:16px; font-weight:600;}
+  .panel .sub{margin:0 0 18px; font-size:12.5px; color:#6B7A7E;}
+  label{display:block; font-size:12.5px; font-weight:500; color:#3F4E52; margin-bottom:5px; margin-top:14px;}
+  label:first-of-type{margin-top:0;}
+  input[type=text], textarea, select{
+    width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:8px;
+    font-family:'Space Grotesk',sans-serif; font-size:14px; color:var(--ink); background:#FCFCFB;
+  }
+  textarea{resize:vertical; min-height:56px;}
+  input:focus, textarea:focus, select:focus{outline:2px solid var(--teal-light); outline-offset:1px; border-color:var(--teal-light);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:600px){.row2{grid-template-columns:1fr;}}
+  .actions{display:flex; align-items:center; gap:12px; margin-top:18px;}
+  button{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13.5px; padding:10px 18px; border-radius:8px; border:none; cursor:pointer;}
+  .btn-primary{background:var(--orange); color:#fff;}
+  .btn-primary:hover{background:#B93B1A;}
+  .btn-secondary{background:transparent; color:var(--teal-light); border:1px solid var(--line);}
+  .status{font-size:12.5px; color:#6B7A7E;}
+  .status.ok{color:#2C6E45;}
+  .status.err{color:#B93B1A;}
+
+  .c-card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:10px; background:#FCFCFB; cursor:pointer;}
+  .c-card:hover{border-color:var(--teal-light);}
+  .c-card.vencido{border-left:4px solid #B93B1A;}
+  .c-top{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;}
+  .tag{font-size:10px; padding:2px 8px; border-radius:999px; font-family:'JetBrains Mono',monospace;}
+  .tag.ok{background:#EAF5EE; color:#2C6E45;}
+  .tag.proceso{background:#F0E4D8; color:#8A5A2A;}
+  .tag.pendiente{background:#EDEAE3; color:#6B7A7E;}
+  .tag.vencido{background:#FBEAE5; color:#B93B1A;}
+  .tag.origen{background:#DCEBEA; color:var(--teal-light);}
+  .c-desc{font-size:13.5px; font-weight:600; margin-bottom:4px;}
+  .c-meta{font-size:11px; color:#8A9A9E; font-family:'JetBrains Mono',monospace;}
+  .empty{padding:24px; text-align:center; color:#8A9A9E; font-size:13px;}
+  .filtros{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
+  .filtros button{
+    background:#fff; border:1px solid var(--line); color:#6B7A7E; font-weight:500;
+    padding:6px 12px; font-size:12px; border-radius:999px;
+  }
+  .filtros button.activo{background:var(--teal); color:#fff; border-color:var(--teal);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <img src="logo-senercom.png" alt="Senercom" class="header-logo">
+    <a class="back" href="index.html">&larr; Inicio</a>
+    <h1>Compromisos y Medidas</h1>
+    <span class="code-pill mono">FOR-SGC-007 / FOR-SGC-008</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="panel">
+    <h2 id="form-title">Nuevo compromiso</h2>
+    <p class="sub">Misma estructura de la tabla de Acuerdos y Compromisos usada en el Acta e Informe de Revisión de Gerencia — pero acá queda viva: se arrastra sola de un informe al siguiente hasta que se marque como cumplida.</p>
+
+    <form id="form-c">
+      <input type="hidden" id="f-id" value="">
+
+      <label for="f-compromiso">Compromiso / Medida</label>
+      <textarea id="f-compromiso" required placeholder="Ej: Rematar el 100% de procedimientos de la empresa en formato ISO"></textarea>
+
+      <div class="row2">
+        <div>
+          <label for="f-responsable">Responsable</label>
+          <input type="text" id="f-responsable" placeholder="Ej: Carlos Braun">
+        </div>
+        <div>
+          <label for="f-fecha">Fecha comprometida</label>
+          <input type="text" id="f-fecha" placeholder="dd-mm-aaaa">
+        </div>
+      </div>
+
+      <label for="f-estado">Estado</label>
+      <select id="f-estado">
+        <option value="Pendiente">Pendiente</option>
+        <option value="En proceso">En proceso</option>
+        <option value="OK">OK / Cumplido</option>
+      </select>
+
+      <label for="f-observaciones">Observaciones</label>
+      <textarea id="f-observaciones" placeholder="Avance, contexto, motivo del estado actual"></textarea>
+
+      <label style="display:flex; align-items:center; gap:8px; margin-top:16px;">
+        <input type="checkbox" id="f-monitorear" style="width:auto;" checked>
+        Monitorear en Panel de Control
+      </label>
+
+      <label for="f-responsables">Responsables de ejecución (mínimo 2 personas, separadas por coma)</label>
+      <input type="text" id="f-responsables" placeholder="Ej: Carlos Braun, Cristián Menéndez" required>
+
+      <div class="actions">
+        <button type="submit" class="btn-primary">Guardar</button>
+        <button type="button" class="btn-secondary" id="btn-cancelar" style="display:none;">Cancelar edición</button>
+        <span class="status" id="status"></span>
+      </div>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h2>Compromisos registrados</h2>
+    <p class="sub">Los vencidos y no cumplidos aparecen resaltados, y son los que se arrastran en el próximo informe.</p>
+    <div class="filtros">
+      <button class="activo" data-filtro="todos">Todos</button>
+      <button data-filtro="pendientes">Pendientes / En proceso</button>
+      <button data-filtro="vencidos">Vencidos</button>
+      <button data-filtro="ok">Cumplidos</button>
+    </div>
+    <div id="lista-compromisos"></div>
+  </div>
+
+</main>
+
+<script>
+  const APP_URL = 'https://script.google.com/macros/s/AKfycbzCquDf6sVRaGePNemoq1CMlZN9wdivpRmCw7omiSkgHiIcWIcf8jhC5t9Lc01UhMt7hw/exec';
+  const APP_KEY = 'senercom-sgi-7x9K2m';
+  const TABLA = 'Compromisos_Medidas';
+  const USUARIO = 'Carlos Braun';
+  let items = [];
+  let filtroActivo = 'todos';
+
+  const form = document.getElementById('form-c');
+  const statusEl = document.getElementById('status');
+  const btnCancelar = document.getElementById('btn-cancelar');
+  const formTitle = document.getElementById('form-title');
+
+  function setStatus(msg, tipo) { statusEl.textContent = msg; statusEl.className = 'status' + (tipo ? ' ' + tipo : ''); }
+  function escapeHtml(str) {
+    if (str === undefined || str === null) return '';
+    return String(str).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
+  }
+  function formatearFecha(iso) {
+    if (!iso) return '-';
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+  function parseFechaCompromiso(txt) {
+    if (!txt) return null;
+    const m = String(txt).match(/(\d{1,2})-(\d{1,2})-(\d{4})/);
+    if (m) return new Date(m[3], m[2] - 1, m[1]);
+    const d = new Date(txt);
+    return isNaN(d) ? null : d;
+  }
+  function estaVencido(r) {
+    if (r['Estado'] === 'OK') return false;
+    const f = parseFechaCompromiso(r['Fecha compromiso']);
+    return f && f < new Date();
+  }
+
+  function listar() {
+    const callbackName = 'cb_' + Date.now();
+    window[callbackName] = function (data) {
+      items = data.registros || [];
+      renderLista();
+      delete window[callbackName];
+      document.body.removeChild(script);
+    };
+    const script = document.createElement('script');
+    script.src = APP_URL + '?accion=listar&tabla=' + TABLA + '&clave=' + APP_KEY + '&callback=' + callbackName;
+    document.body.appendChild(script);
+  }
+
+  document.querySelectorAll('.filtros button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.filtros button').forEach(function (b) { b.classList.remove('activo'); });
+      btn.classList.add('activo');
+      filtroActivo = btn.dataset.filtro;
+      renderLista();
+    });
+  });
+
+  function renderLista() {
+    const cont = document.getElementById('lista-compromisos');
+    let filtrados = items.slice();
+    if (filtroActivo === 'vencidos') filtrados = filtrados.filter(estaVencido);
+    else if (filtroActivo === 'ok') filtrados = filtrados.filter(function (r) { return r['Estado'] === 'OK'; });
+    else if (filtroActivo === 'pendientes') filtrados = filtrados.filter(function (r) { return r['Estado'] !== 'OK'; });
+
+    if (!filtrados.length) { cont.innerHTML = '<div class="empty">No hay compromisos en este filtro.</div>'; return; }
+
+    filtrados = filtrados.slice().reverse();
+    cont.innerHTML = filtrados.map(function (r) {
+      const vencido = estaVencido(r);
+      const estadoClass = r['Estado'] === 'OK' ? 'ok' : (r['Estado'] === 'En proceso' ? 'proceso' : 'pendiente');
+      return '<div class="c-card' + (vencido ? ' vencido' : '') + '" onclick="editar(\'' + r.id + '\')">' +
+        '<div class="c-top">' +
+        '<span class="tag ' + (vencido ? 'vencido' : estadoClass) + '">' + (vencido ? 'Vencido' : (r['Estado'] || 'Pendiente')) + '</span>' +
+        (r['Origen'] ? '<span class="tag origen">Origen: ' + escapeHtml(r['Origen']) + '</span>' : '') +
+        '</div>' +
+        '<div class="c-desc">' + escapeHtml(r['Compromiso']) + '</div>' +
+        '<div class="c-meta">Responsable: ' + escapeHtml(r['Responsable'] || '-') + ' · Fecha comprometida: ' + escapeHtml(r['Fecha compromiso'] || '-') + '</div>' +
+        (r['Observaciones'] ? '<div class="c-meta">' + escapeHtml(r['Observaciones']) + '</div>' : '') +
+        '</div>';
+    }).join('');
+  }
+
+  window.editar = function (id) {
+    const r = items.find(function (x) { return x.id === id; });
+    if (!r) return;
+    document.getElementById('f-id').value = r.id;
+    document.getElementById('f-compromiso').value = r['Compromiso'] || '';
+    document.getElementById('f-responsable').value = r['Responsable'] || '';
+    document.getElementById('f-fecha').value = r['Fecha compromiso'] || '';
+    document.getElementById('f-estado').value = r['Estado'] || 'Pendiente';
+    document.getElementById('f-observaciones').value = r['Observaciones'] || '';
+    document.getElementById('f-monitorear').checked = r['Monitorear en Panel de Control'] !== 'No';
+    document.getElementById('f-responsables').value = r['Responsables de ejecución'] || '';
+    formTitle.textContent = 'Editando compromiso';
+    btnCancelar.style.display = 'inline-block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  btnCancelar.addEventListener('click', function () {
+    form.reset();
+    document.getElementById('f-id').value = '';
+    document.getElementById('f-monitorear').checked = true;
+    formTitle.textContent = 'Nuevo compromiso';
+    btnCancelar.style.display = 'none';
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const responsables = document.getElementById('f-responsables').value;
+    if (responsables.split(',').filter(function (n) { return n.trim(); }).length < 2) {
+      setStatus('Debes indicar al menos 2 responsables de ejecución, separados por coma.', 'err');
+      return;
+    }
+    const id = document.getElementById('f-id').value;
+    const registro = {
+      'Compromiso': document.getElementById('f-compromiso').value,
+      'Responsable': document.getElementById('f-responsable').value,
+      'Fecha compromiso': document.getElementById('f-fecha').value,
+      'Estado': document.getElementById('f-estado').value,
+      'Observaciones': document.getElementById('f-observaciones').value,
+      'Responsables de ejecución': responsables,
+      'Monitorear en Panel de Control': document.getElementById('f-monitorear').checked ? 'Sí' : 'No'
+    };
+    if (id) registro.id = id;
+
+    setStatus('Guardando...', '');
+    fetch(APP_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ tabla: TABLA, accion: id ? 'actualizar' : 'crear', registro: registro, usuario: USUARIO, clave: APP_KEY })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) { setStatus('Error: ' + data.error, 'err'); return; }
+        setStatus('Guardado correctamente.', 'ok');
+        form.reset();
+        document.getElementById('f-id').value = '';
+        document.getElementById('f-monitorear').checked = true;
+        formTitle.textContent = 'Nuevo compromiso';
+        btnCancelar.style.display = 'none';
+        listar();
+      })
+      .catch(function (err) { setStatus('Error de conexión: ' + err.message, 'err'); });
+  });
+
+  listar();
+</script>
+
+</body>
+</html>

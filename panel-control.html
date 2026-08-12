@@ -23,8 +23,8 @@
   .code-pill{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:rgba(255,255,255,.12); padding:3px 9px; border-radius:999px; margin-left:auto;}
   main{max-width:1040px; margin:0 auto; padding:28px 24px 64px;}
 
-  .kpi-row{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px;}
-  @media (max-width:720px){.kpi-row{grid-template-columns:1fr 1fr;}}
+  .kpi-row{display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:24px;}
+  @media (max-width:820px){.kpi-row{grid-template-columns:1fr 1fr;}}
   .kpi{background:var(--card-bg); border:1px solid var(--line); border-radius:12px; padding:16px;}
   .kpi .n{font-size:26px; font-weight:700; font-family:'JetBrains Mono',monospace;}
   .kpi .lbl{font-size:11.5px; color:#6B7A7E; margin-top:2px;}
@@ -82,9 +82,16 @@
 
   <div class="kpi-row">
     <div class="kpi alerta"><div class="n" id="kpi-alertas">-</div><div class="lbl">Ítems en alerta</div></div>
+    <div class="kpi alerta"><div class="n" id="kpi-compromisos-vencidos">-</div><div class="lbl">Compromisos vencidos</div></div>
     <div class="kpi"><div class="n" id="kpi-pendientes">-</div><div class="lbl">Pendientes de revisión</div></div>
     <div class="kpi"><div class="n" id="kpi-monitoreados">-</div><div class="lbl">Monitoreados en total</div></div>
     <div class="kpi ok"><div class="n" id="kpi-hallazgos-pend">-</div><div class="lbl">Hallazgos sin evaluar</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Compromisos y Medidas <span class="count" id="c-compromisos"></span></h2>
+    <p class="sub">Los vencidos o en proceso son los que se arrastran al próximo informe de gerencia hasta quedar cumplidos.</p>
+    <div id="lista-compromisos" class="loading">Cargando...</div>
   </div>
 
   <div class="panel">
@@ -138,11 +145,44 @@
     return lista.filter(function (r) { return r['Monitorear en Panel de Control'] === 'Sí'; });
   }
 
+  function parseFechaCompromiso(txt) {
+    if (!txt) return null;
+    const m = String(txt).match(/(\d{1,2})-(\d{1,2})-(\d{4})/);
+    if (m) return new Date(m[3], m[2] - 1, m[1]);
+    const d = new Date(txt);
+    return isNaN(d) ? null : d;
+  }
+  function estaVencido(r) {
+    if (r['Estado'] === 'OK') return false;
+    const f = parseFechaCompromiso(r['Fecha compromiso']);
+    return f && f < new Date();
+  }
+
   let totalAlertas = 0, totalPendientes = 0, totalMonitoreados = 0;
 
   function cargarTodo() {
     document.getElementById('updated-at').textContent = 'Actualizando...';
     totalAlertas = 0; totalPendientes = 0; totalMonitoreados = 0;
+
+    jsonp('Compromisos_Medidas', function (registros) {
+      const items = monitoreados(registros);
+      document.getElementById('c-compromisos').textContent = '(' + items.length + ')';
+      totalMonitoreados += items.length;
+      const vencidos = items.filter(estaVencido);
+      document.getElementById('kpi-compromisos-vencidos').textContent = vencidos.length;
+      const cont = document.getElementById('lista-compromisos');
+      if (!items.length) { cont.innerHTML = '<div class="empty">Sin compromisos marcados para monitoreo.</div>'; return; }
+      const ordenados = items.slice().sort(function (a, b) { return (estaVencido(b) ? 1 : 0) - (estaVencido(a) ? 1 : 0); });
+      cont.innerHTML = ordenados.map(function (r) {
+        const vencido = estaVencido(r);
+        const dot = vencido ? 'alerta' : (r['Estado'] === 'OK' ? 'ok' : 'pendiente');
+        return '<div class="item-row"><div class="item-dot ' + dot + '"></div><div class="item-body">' +
+          '<div class="item-desc">' + escapeHtml(r['Compromiso']) + '</div>' +
+          '<div class="item-meta">' + (vencido ? 'VENCIDO · ' : '') + 'Responsable: ' + escapeHtml(r['Responsable'] || '-') + ' · Fecha: ' + escapeHtml(r['Fecha compromiso'] || '-') + ' · Estado: ' + (r['Estado'] || '-') + '</div>' +
+          '</div></div>';
+      }).join('');
+      actualizarKPIs();
+    });
 
     jsonp('Riesgos_Oportunidades', function (registros) {
       const items = monitoreados(registros);
