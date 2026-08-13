@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estado de Obras · Gestión Integrada ISO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#003B49; --teal-light:#0A5568; --orange:#CF4520;
+    --cream:#F7F5F0; --ink:#12222A; --line:#DCE3E1; --card-bg:#FFFFFF; --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--cream); color:var(--ink); font-family:'Space Grotesk',sans-serif; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  header{background:var(--teal); color:#fff; padding:20px 24px;}
+  .header-inner{max-width:980px; margin:0 auto; display:flex; align-items:center; gap:14px;}
+  .header-logo{height:26px; width:auto;}
+  .back{color:#fff; opacity:.8; text-decoration:none; font-size:13px;}
+  .back:hover{opacity:1;}
+  h1{margin:0; font-size:18px; font-weight:600;}
+  .code-pill{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:rgba(255,255,255,.12); padding:3px 9px; border-radius:999px; margin-left:auto;}
+  main{max-width:980px; margin:0 auto; padding:28px 24px 64px;}
+  .aviso{background:#EAF1F1; border:1px solid #C9DEDE; border-radius:10px; padding:12px 16px; font-size:12px; color:#0A5568; margin-bottom:22px;}
+  .panel{background:var(--card-bg); border:1px solid var(--line); border-radius:var(--radius); padding:22px; margin-bottom:22px;}
+  .panel h2{margin:0 0 4px; font-size:16px; font-weight:600;}
+  .panel .sub{margin:0 0 18px; font-size:12.5px; color:#6B7A7E;}
+
+  .obra-card{border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin-bottom:12px; background:#FCFCFB;}
+  .obra-titulo{font-weight:600; font-size:15px; margin-bottom:10px;}
+  .obra-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; font-size:12px;}
+  .obra-grid .lbl{color:#8A9A9E; font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase;}
+  .obra-grid .val{font-weight:600; margin-top:1px; font-size:13.5px;}
+  .obra-grid .val.pos{color:#2C6E45;}
+  .obra-grid .val.warn{color:#B93B1A;}
+  .empty{padding:24px; text-align:center; color:#8A9A9E; font-size:13px;}
+  .updated-at{font-size:11px; color:#8A9A9E; font-family:'JetBrains Mono',monospace; margin-bottom:4px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <img src="logo-senercom.png" alt="Senercom" class="header-logo">
+    <a class="back" href="index.html">&larr; Inicio</a>
+    <h1>Estado de Obras</h1>
+    <span class="code-pill mono">Solo lectura</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="aviso">
+    Esta vista se llena sola desde tu planilla comercial (pestaña E° OBRAS) — no se edita acá. Cuando actualices los números en tu planilla, corre <strong>extraerEstadoObras()</strong> (o <strong>actualizarTodosLosSnapshots()</strong>) desde Apps Script para que se refleje aquí. Solo se muestran obras vigentes — las marcadas "Terminado" se descartan automáticamente.
+  </div>
+
+  <div class="panel">
+    <h2>Obras vigentes <span class="updated-at" id="updated-at" style="margin-left:8px;"></span></h2>
+    <p class="sub">Último snapshot cargado desde Centro de Costos / E° OBRAS.</p>
+    <div id="lista-obras">Cargando...</div>
+  </div>
+
+</main>
+
+<script>
+  const APP_URL = 'https://script.google.com/macros/s/AKfycbzCquDf6sVRaGePNemoq1CMlZN9wdivpRmCw7omiSkgHiIcWIcf8jhC5t9Lc01UhMt7hw/exec';
+  const APP_KEY = 'senercom-sgi-7x9K2m';
+  const TABLA = 'Estado_Obras';
+
+  function clp(n) { return '$' + Math.round(Number(n) || 0).toLocaleString('es-CL'); }
+  function escapeHtml(str) {
+    if (str === undefined || str === null) return '';
+    return String(str).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
+  }
+  function formatearFecha(iso) {
+    if (!iso) return '-';
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' + d.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function listar() {
+    const callbackName = 'cb_' + Date.now();
+    window[callbackName] = function (data) {
+      renderLista(data.registros || []);
+      delete window[callbackName];
+      document.body.removeChild(script);
+    };
+    const script = document.createElement('script');
+    script.src = APP_URL + '?accion=listar&tabla=' + TABLA + '&clave=' + APP_KEY + '&callback=' + callbackName;
+    document.body.appendChild(script);
+  }
+
+  function renderLista(items) {
+    const cont = document.getElementById('lista-obras');
+    if (!items.length) { cont.innerHTML = '<div class="empty">Aún no hay snapshot cargado. Corre extraerEstadoObras() desde Apps Script.</div>'; return; }
+
+    let ultima = '';
+    items.forEach(function (r) { if (r['creado_fecha'] > ultima) ultima = r['creado_fecha']; });
+    document.getElementById('updated-at').textContent = ultima ? '· Actualizado ' + formatearFecha(ultima) : '';
+
+    cont.innerHTML = items.map(function (r) {
+      return '<div class="obra-card">' +
+        '<div class="obra-titulo">' + escapeHtml(r['Obra']) + '</div>' +
+        '<div class="obra-grid">' +
+        '<div><div class="lbl">Valor Total</div><div class="val">' + clp(r['Valor Total Obra']) + '</div></div>' +
+        '<div><div class="lbl">Facturado Acum.</div><div class="val">' + clp(r['Total Facturado Acumulado']) + '</div></div>' +
+        '<div><div class="lbl">Por Facturar</div><div class="val">' + clp(r['Total por Facturar']) + '</div></div>' +
+        '<div><div class="lbl">Costos a la Fecha</div><div class="val">' + clp(r['Total Costos a la Fecha']) + '</div></div>' +
+        '<div><div class="lbl">Disponible</div><div class="val">' + clp(r['Disponible Costos por Realizar']) + '</div></div>' +
+        '<div><div class="lbl">Utilidad a la Fecha</div><div class="val pos">' + clp(r['Utilidad a la Fecha']) + '</div></div>' +
+        '<div><div class="lbl">% Utilidad</div><div class="val">' + (r['% Utilidad a la Fecha'] || '-') + '</div></div>' +
+        '<div><div class="lbl">Utilidad Neta</div><div class="val pos">' + clp(r['Utilidad Neta']) + '</div></div>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  listar();
+</script>
+
+</body>
+</html>
