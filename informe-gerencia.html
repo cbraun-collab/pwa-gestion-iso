@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generar Informe · Gestión Integrada ISO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#003B49; --teal-light:#0A5568; --orange:#CF4520;
+    --cream:#F7F5F0; --ink:#12222A; --line:#DCE3E1; --card-bg:#FFFFFF; --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--cream); color:var(--ink); font-family:'Space Grotesk',sans-serif; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  header{background:var(--teal); color:#fff; padding:20px 24px;}
+  .header-inner{max-width:820px; margin:0 auto; display:flex; align-items:center; gap:14px;}
+  .header-logo{height:26px; width:auto;}
+  .back{color:#fff; opacity:.8; text-decoration:none; font-size:13px;}
+  .back:hover{opacity:1;}
+  h1{margin:0; font-size:18px; font-weight:600;}
+  .code-pill{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:rgba(255,255,255,.12); padding:3px 9px; border-radius:999px; margin-left:auto;}
+  main{max-width:820px; margin:0 auto; padding:28px 24px 64px;}
+
+  .panel{background:var(--card-bg); border:1px solid var(--line); border-radius:var(--radius); padding:26px; margin-bottom:22px;}
+  .panel h2{margin:0 0 6px; font-size:17px; font-weight:600; display:flex; align-items:center; gap:10px;}
+  .panel .step-n{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:24px; height:24px; border-radius:50%; background:var(--teal); color:#fff;
+    font-family:'JetBrains Mono',monospace; font-size:12px; flex-shrink:0;
+  }
+  .panel .sub{margin:0 0 18px; font-size:13px; color:#6B7A7E; line-height:1.5;}
+
+  button{
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;
+    padding:12px 22px; border-radius:10px; border:none; cursor:pointer; width:100%;
+  }
+  .btn-secondary{background:#EAF1F1; color:var(--teal-light);}
+  .btn-secondary:hover{background:#DCEBEA;}
+  .btn-primary{background:var(--orange); color:#fff;}
+  .btn-primary:hover{background:#B93B1A;}
+  button:disabled{opacity:.55; cursor:default;}
+
+  .status{font-size:12.5px; margin-top:12px; line-height:1.5;}
+  .status.ok{color:#2C6E45;}
+  .status.err{color:#B93B1A;}
+  .status.progreso{color:#6B7A7E;}
+
+  .resultado-links{margin-top:16px; display:flex; flex-direction:column; gap:10px;}
+  .resultado-links a{
+    display:flex; align-items:center; gap:10px; padding:14px 16px;
+    background:#EAF5EE; border:1px solid #C9E3D2; border-radius:10px;
+    color:#2C6E45; text-decoration:none; font-weight:600; font-size:13.5px;
+  }
+  .resultado-links a:hover{background:#DFF0E4;}
+  .aviso{background:#EAF1F1; border:1px solid #C9DEDE; border-radius:10px; padding:12px 16px; font-size:12px; color:#0A5568; margin-bottom:22px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <img src="logo-senercom.png" alt="Senercom" class="header-logo">
+    <a class="back" href="index.html">&larr; Inicio</a>
+    <h1>Generar Informe de Gerencia</h1>
+    <span class="code-pill mono">FOR-SGC-007 / FOR-SGC-008</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="aviso">
+    Genera los dos documentos directo desde acá — no hace falta entrar a Apps Script. Cada uno se guarda solo en su carpeta de Drive.
+  </div>
+
+  <div class="panel">
+    <h2><span class="step-n">1</span> Actualizar las fuentes externas (opcional, recomendado)</h2>
+    <p class="sub">Trae lo más reciente de tu planilla comercial, FOR-SGC-004, evaluación de proveedores, encuesta de satisfacción, No Conformidades y Capacitaciones, antes de generar el informe. Tarda unos segundos.</p>
+    <button class="btn-secondary" id="btn-actualizar" onclick="actualizarFuentes()">↻ Actualizar todas las fuentes</button>
+    <div class="status" id="status-actualizar"></div>
+  </div>
+
+  <div class="panel">
+    <h2><span class="step-n">2</span> Generar el informe</h2>
+    <p class="sub">Arma el FOR-SGC-008 (informe completo) y el FOR-SGC-007 (acta resumen) con la información actual de la PWA y de los últimos snapshots. Puede tardar hasta un minuto — no cierres esta página mientras carga.</p>
+    <button class="btn-primary" id="btn-generar" onclick="generarInforme()">📄 Generar Informe de Gerencia</button>
+    <div class="status" id="status-generar"></div>
+    <div class="resultado-links" id="resultado-links"></div>
+  </div>
+
+</main>
+
+<script>
+  const APP_URL = 'https://script.google.com/macros/s/AKfycbzCquDf6sVRaGePNemoq1CMlZN9wdivpRmCw7omiSkgHiIcWIcf8jhC5t9Lc01UhMt7hw/exec';
+  const APP_KEY = 'senercom-sgi-7x9K2m';
+  const USUARIO = 'Carlos Braun';
+
+  function setStatus(elId, msg, tipo) {
+    const el = document.getElementById(elId);
+    el.textContent = msg;
+    el.className = 'status' + (tipo ? ' ' + tipo : '');
+  }
+
+  function actualizarFuentes() {
+    const btn = document.getElementById('btn-actualizar');
+    btn.disabled = true;
+    setStatus('status-actualizar', 'Actualizando (puede tardar 20-30 segundos)...', 'progreso');
+    fetch(APP_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ accion: 'actualizarFuente', fuente: 'Todos', usuario: USUARIO, clave: APP_KEY })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        btn.disabled = false;
+        if (data.error) { setStatus('status-actualizar', 'Error: ' + data.error, 'err'); return; }
+        setStatus('status-actualizar', 'Fuentes actualizadas correctamente.', 'ok');
+      })
+      .catch(function (err) {
+        btn.disabled = false;
+        setStatus('status-actualizar', 'Error de conexión: ' + err.message, 'err');
+      });
+  }
+
+  function generarInforme() {
+    const btn = document.getElementById('btn-generar');
+    btn.disabled = true;
+    document.getElementById('resultado-links').innerHTML = '';
+    setStatus('status-generar', 'Generando ambos documentos, puede tardar hasta un minuto...', 'progreso');
+    fetch(APP_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ accion: 'generarInforme', cual: 'Ambos', usuario: USUARIO, clave: APP_KEY })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        btn.disabled = false;
+        if (data.error) { setStatus('status-generar', 'Error: ' + data.error, 'err'); return; }
+        setStatus('status-generar', 'Informe generado correctamente.', 'ok');
+        let html = '';
+        if (data.urlDatos) html += '<a href="' + data.urlDatos + '" target="_blank">📄 Abrir FOR-SGC-008 — Informe de Datos</a>';
+        if (data.urlResumen) html += '<a href="' + data.urlResumen + '" target="_blank">📄 Abrir FOR-SGC-007 — Acta Resumen</a>';
+        document.getElementById('resultado-links').innerHTML = html;
+      })
+      .catch(function (err) {
+        btn.disabled = false;
+        setStatus('status-generar', 'Error de conexión: ' + err.message, 'err');
+      });
+  }
+</script>
+
+</body>
+</html>

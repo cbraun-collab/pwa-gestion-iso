@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual de Uso · Gestión Integrada ISO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#003B49; --teal-light:#0A5568; --orange:#CF4520;
+    --cream:#F7F5F0; --ink:#12222A; --line:#DCE3E1; --card-bg:#FFFFFF; --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--cream); color:var(--ink); font-family:'Space Grotesk',sans-serif; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  header{background:var(--teal); color:#fff; padding:20px 24px;}
+  .header-inner{max-width:880px; margin:0 auto; display:flex; align-items:center; gap:14px;}
+  .header-logo{height:26px; width:auto;}
+  .back{color:#fff; opacity:.8; text-decoration:none; font-size:13px;}
+  .back:hover{opacity:1;}
+  h1{margin:0; font-size:18px; font-weight:600;}
+  .code-pill{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:rgba(255,255,255,.12); padding:3px 9px; border-radius:999px; margin-left:auto;}
+  main{max-width:880px; margin:0 auto; padding:28px 24px 64px;}
+
+  nav.toc{background:var(--card-bg); border:1px solid var(--line); border-radius:var(--radius); padding:18px 22px; margin-bottom:24px;}
+  nav.toc h2{margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.5px; color:var(--teal-light); font-family:'JetBrains Mono',monospace;}
+  nav.toc a{display:block; font-size:13.5px; color:var(--ink); text-decoration:none; padding:4px 0;}
+  nav.toc a:hover{color:var(--orange);}
+
+  section{background:var(--card-bg); border:1px solid var(--line); border-radius:var(--radius); padding:26px; margin-bottom:22px; scroll-margin-top:20px;}
+  section h2{margin:0 0 14px; font-size:18px; font-weight:600; color:var(--teal);}
+  section h3{margin:20px 0 8px; font-size:14.5px; font-weight:600;}
+  section p{font-size:13.5px; line-height:1.6; color:#3F4E52; margin:0 0 10px;}
+  section .regla{background:#FBEAE5; border-left:4px solid var(--orange); padding:12px 16px; border-radius:8px; font-size:13.5px; margin:14px 0;}
+  section .tip{background:#EAF1F1; border-left:4px solid var(--teal-light); padding:12px 16px; border-radius:8px; font-size:13px; color:#0A5568; margin:14px 0;}
+
+  table{width:100%; border-collapse:collapse; font-size:12.5px; margin:12px 0 4px;}
+  th{text-align:left; font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.3px; color:#8AA0A5; padding:8px 10px; border-bottom:1px solid var(--line);}
+  td{padding:9px 10px; border-bottom:1px solid #EEF1F0; vertical-align:top;}
+  code{background:#EAF1F1; color:var(--teal-light); padding:1px 6px; border-radius:5px; font-family:'JetBrains Mono',monospace; font-size:11.5px;}
+  ul{margin:8px 0; padding-left:20px; font-size:13.5px; color:#3F4E52; line-height:1.6;}
+  a.link-app{color:var(--teal-light); font-weight:600;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <img src="logo-senercom.png" alt="Senercom" class="header-logo">
+    <a class="back" href="index.html">&larr; Inicio</a>
+    <h1>Manual de Uso</h1>
+    <span class="code-pill mono">Anexo PWA</span>
+  </div>
+</header>
+
+<main>
+
+  <nav class="toc">
+    <h2>Contenido</h2>
+    <a href="#idea">1. Idea general</a>
+    <a href="#modulos">2. Los 9 módulos (dónde ingresas tú)</a>
+    <a href="#replicar">3. El mecanismo "Replicar a"</a>
+    <a href="#fuentes">4. Fuentes externas conectadas</a>
+    <a href="#informe">5. Generar el Informe de Gerencia</a>
+    <a href="#anual">6. Qué revisar cada año</a>
+    <a href="#pendientes">7. Pendientes conocidos</a>
+  </nav>
+
+  <section id="idea">
+    <h2>1. Idea general</h2>
+    <p>La PWA es el punto único donde vive tu Sistema de Gestión Integrado. Todo lo que antes estaba repartido en archivos sueltos (FODA, PESTEL, Balance Scorecard, Riesgos y Oportunidades, Partes Interesadas) ahora vive acá, y desde acá se arma el Informe de Gerencia automáticamente.</p>
+    <div class="regla"><strong>Regla de oro:</strong> nunca escribes el mismo dato dos veces.
+      <ul>
+        <li>Si el dato <strong>nace en la gestión ISO</strong> (un riesgo nuevo, un hallazgo, un compromiso) → lo escribes directo en la PWA.</li>
+        <li>Si el dato <strong>nace en otro sistema tuyo</strong> (planilla comercial, evaluación de proveedores, encuesta de clientes) → lo sigues llevando ahí como siempre, y la PWA lo extrae automáticamente.</li>
+      </ul>
+    </div>
+    <div class="tip">Si tienes varias cuentas de Google abiertas en el mismo Chrome, la app puede fallar para mostrar datos. Usa una ventana de Incógnito, o cierra sesión de las cuentas que no sean <code>carlos.braun@gmail.com</code>, mientras trabajas en la PWA.</div>
+  </section>
+
+  <section id="modulos">
+    <h2>2. Los 9 módulos de la PWA</h2>
+    <p>Todos se abren desde la portada. Todos tienen "Responsables de ejecución" y el checkbox "Monitorear en Panel de Control". Los 7 primeros además tienen el bloque "Replicar a" al crear un ítem — ver punto 3.</p>
+    <table>
+      <thead><tr><th>Módulo</th><th>Código</th><th>Cómo se llena</th></tr></thead>
+      <tbody>
+        <tr><td>Partes Interesadas</td><td>DOC-SGC-007</td><td>Manual, en la app (incluye Ley 21.719)</td></tr>
+        <tr><td>FODA</td><td>DOC-SGC-003</td><td>Manual, en la app (con matriz cruzada TOWS)</td></tr>
+        <tr><td>PESTEL</td><td>DOC-SGC-008</td><td>Manual, en la app</td></tr>
+        <tr><td>Balance Scorecard</td><td>DOC-SGC-006</td><td>Manual, en la app (sin importador)</td></tr>
+        <tr><td>Riesgos y Oportunidades</td><td>DOC-SGC-010</td><td>Manual, en la app (botón "Origen" desde otros módulos)</td></tr>
+        <tr><td>Hallazgos</td><td>FOR-SGC-013</td><td>Manual, en la app — captura rápida desde terreno</td></tr>
+        <tr><td>Compromisos y Medidas</td><td>FOR-SGC-007/008</td><td>Manual, en la app — se arrastran solos de un informe al siguiente</td></tr>
+        <tr><td>Estado de Obras</td><td>—</td><td><strong>Solo lectura</strong> — sigues cargando tu planilla "E° OBRAS" como siempre</td></tr>
+        <tr><td>No Conformidades</td><td>FOR-SGC-001</td><td><strong>Solo lectura</strong> — botón "Actualizar" trae lo último de FOR-SGC-001</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Panel de Control</strong> no es un módulo de carga — es la vista consolidada de todo lo marcado "Monitorear en Panel de Control", más el correo automático semanal.</p>
+  </section>
+
+  <section id="replicar">
+    <h2>3. El mecanismo "Replicar a"</h2>
+    <p>Al crear un ítem nuevo en cualquiera de los 7 módulos editables, aparece al fondo del formulario un bloque "Replicar automáticamente a" con checkboxes hacia los demás módulos.</p>
+    <ul>
+      <li>Si marcas uno o más, al guardar se crea una copia automática en los módulos marcados (descripción, ámbito, obra y responsables).</li>
+      <li><strong>Solo funciona al crear</strong>, no al editar — el bloque desaparece cuando editas un ítem existente.</li>
+      <li>Es una copia única al momento de crear, no una sincronización permanente — si editas el original después, la copia no cambia sola.</li>
+    </ul>
+    <p><em>Ejemplo: detectas un Riesgo nuevo → lo creas en Riesgos y Oportunidades → marcas "Replicar a: Compromisos y Medidas" → queda registrado también como medida de seguimiento, sin volver a escribirlo.</em></p>
+  </section>
+
+  <section id="fuentes">
+    <h2>4. Fuentes externas conectadas</h2>
+    <p>Estas 7 fuentes viven en tus propios archivos — la PWA solo las lee y guarda una foto (snapshot) de lo que encuentra.</p>
+    <table>
+      <thead><tr><th>Fuente</th><th>Código</th><th>Qué extrae</th><th>Función</th></tr></thead>
+      <tbody>
+        <tr><td>Panel de Monitoreo</td><td>FOR-SGC-004</td><td>21 ítems, % de cumplimiento del mes</td><td><code>extraerMonitoreoSGC004()</code></td></tr>
+        <tr><td>Evaluación de Proveedores</td><td>FOR-ADQ-002</td><td>Proveedor, Promedio, Calificación</td><td><code>extraerEvaluacionProveedores()</code></td></tr>
+        <tr><td>Centro de Costos</td><td>FOR-COM-013</td><td>KPIs por ingeniero, estado y tipo de servicio</td><td><code>extraerKPIsComerciales()</code></td></tr>
+        <tr><td>E° OBRAS</td><td>—</td><td>Estado financiero por obra vigente</td><td><code>extraerEstadoObras()</code></td></tr>
+        <tr><td>Encuesta de Satisfacción</td><td>—</td><td>Promedios + detalle por empresa</td><td><code>extraerEncuestaSatisfaccion()</code></td></tr>
+        <tr><td>No Conformidades</td><td>FOR-SGC-001</td><td>Resumen + listado detallado</td><td><code>extraerNoConformidades()</code></td></tr>
+        <tr><td>Plan de Capacitación</td><td>DOC-SGC-012</td><td>Curso, mes programado, Cumplida/Pendiente</td><td><code>extraerCapacitaciones()</code></td></tr>
+      </tbody>
+    </table>
+    <h3>Cómo actualizarlas</h3>
+    <ul>
+      <li><strong>Todas de una vez (recomendado):</strong> desde <a class="link-app" href="informe-gerencia.html">Generar Informe</a>, botón "Actualizar todas las fuentes" — o en Apps Script, función <code>actualizarTodosLosSnapshots()</code>.</li>
+      <li><strong>Una por una:</strong> corre la función individual de la tabla, desde Apps Script.</li>
+      <li><strong>Desde la app (hoy solo No Conformidades):</strong> página <a class="link-app" href="no-conformidades.html">No Conformidades</a>, botón "Actualizar desde FOR-SGC-001".</li>
+    </ul>
+    <p>Cada actualización reemplaza por completo el snapshot anterior — nunca se duplica. Puedes correrla cuando quieras; el momento lógico es justo antes de generar el informe mensual.</p>
+  </section>
+
+  <section id="informe">
+    <h2>5. Generar el Informe de Gerencia</h2>
+    <p>Desde <a class="link-app" href="informe-gerencia.html">esta página de la app</a>: primero (opcional) actualiza todas las fuentes, después genera el informe — te deja los links de los dos documentos directo en pantalla.</p>
+    <p>Los documentos también quedan guardados solos en Drive:</p>
+    <ul>
+      <li>FOR-SGC-008 (Informe de Datos) → carpeta "42.- INFORME DE DATOS PARA REVISIÓN DE GERENCIA"</li>
+      <li>FOR-SGC-007 (Acta Resumen) → carpeta "43.- INFORME REV DE GERENCIA"</li>
+    </ul>
+    <p>El informe trae portada, índice y salto de página automático entre cada punto. Las secciones sin fuente digital conectada (Política de Calidad, Auditorías, Adecuación de Recursos) quedan marcadas <code>[Redacción manual]</code> para completar directo en el documento.</p>
+  </section>
+
+  <section id="anual">
+    <h2>6. Qué revisar cada año</h2>
+    <p>Dos archivos cambian de ubicación cada año — hay que actualizar su ID en Code.gs (constante <code>FUENTES_EXTERNAS</code>) apenas tengas el archivo nuevo:</p>
+    <ul>
+      <li><strong>Plan de Capacitación (DOC-SGC-012)</strong> — nueva carpeta y archivo cada año.</li>
+      <li><strong>FOR-SGC-004 (Panel de Monitoreo)</strong> — revisar si sigue usándose igual, o si ya se puede retirar (ver pendientes).</li>
+    </ul>
+  </section>
+
+  <section id="pendientes">
+    <h2>7. Pendientes conocidos</h2>
+    <p>No es que algo esté roto — es lo que aún falta construir:</p>
+    <ul>
+      <li>Retirar FOR-SGC-004 como archivo aparte una vez que Balance Scorecard esté completo en la PWA.</li>
+      <li>Auditorías y parte de Adecuación de Recursos siguen sin fuente digital — quedan como redacción manual en el informe.</li>
+      <li>Matriz Cruzada FODA (TOWS) — el informe ya tiene el espacio listo, se llena sola apenas cargues algo en ese módulo.</li>
+      <li>Trigger de correo semanal → pasar a mensual (pendiente en <code>enviarResumenSemanal()</code>).</li>
+    </ul>
+  </section>
+
+</main>
+
+</body>
+</html>
