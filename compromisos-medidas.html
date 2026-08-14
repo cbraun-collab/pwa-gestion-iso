@@ -16,7 +16,7 @@
   .mono{font-family:'JetBrains Mono',monospace;}
   header{background:var(--teal); color:#fff; padding:20px 24px;}
   .header-inner{max-width:920px; margin:0 auto; display:flex; align-items:center; gap:14px;}
-  .header-logo{height:26px; width:auto;}
+  .header-logo{height:52px; width:auto;}
   .back{color:#fff; opacity:.8; text-decoration:none; font-size:13px;}
   .back:hover{opacity:1;}
   h1{margin:0; font-size:18px; font-weight:600;}
@@ -40,6 +40,8 @@
   .btn-primary{background:var(--orange); color:#fff;}
   .btn-primary:hover{background:#B93B1A;}
   .btn-secondary{background:transparent; color:var(--teal-light); border:1px solid var(--line);}
+  .btn-danger{background:transparent; color:#B93B1A; border:1px solid #E5B8A8;}
+  .btn-danger:hover{background:#FBEAE5;}
   .status{font-size:12.5px; color:#6B7A7E;}
   .status.ok{color:#2C6E45;}
   .status.err{color:#B93B1A;}
@@ -120,6 +122,7 @@
       <div class="actions">
         <button type="submit" class="btn-primary">Guardar</button>
         <button type="button" class="btn-secondary" id="btn-cancelar" style="display:none;">Cancelar edición</button>
+          <button type="button" class="btn-danger" id="btn-eliminar" style="display:none;">🗑 Eliminar</button>
         <span class="status" id="status"></span>
       </div>
     </form>
@@ -236,6 +239,7 @@
     document.getElementById('f-responsables').value = r['Responsables de ejecución'] || '';
     formTitle.textContent = 'Editando compromiso';
     btnCancelar.style.display = 'inline-block';
+    document.getElementById('btn-eliminar').style.display = 'inline-block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -245,6 +249,29 @@
     document.getElementById('f-monitorear').checked = true;
     formTitle.textContent = 'Nuevo compromiso';
     btnCancelar.style.display = 'none';
+    document.getElementById('btn-eliminar').style.display = 'none';
+  });
+
+  document.getElementById('btn-eliminar').addEventListener('click', function () {
+    const id = document.getElementById('f-id').value;
+    if (!id) return;
+    if (!confirm('¿Eliminar este compromiso? Esta acción no se puede deshacer.')) return;
+    fetch(APP_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ tabla: TABLA, accion: 'eliminar', id: id, usuario: USUARIO, clave: APP_KEY })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) { setStatus('Error: ' + data.error, 'err'); return; }
+        form.reset();
+        document.getElementById('f-id').value = '';
+        document.getElementById('f-monitorear').checked = true;
+        formTitle.textContent = 'Nuevo compromiso';
+        btnCancelar.style.display = 'none';
+        document.getElementById('btn-eliminar').style.display = 'none';
+        listar();
+      })
+      .catch(function (err) { setStatus('Error de conexión: ' + err.message, 'err'); });
   });
 
   form.addEventListener('submit', function (e) {
@@ -280,6 +307,7 @@
         document.getElementById('f-monitorear').checked = true;
         formTitle.textContent = 'Nuevo compromiso';
         btnCancelar.style.display = 'none';
+    document.getElementById('btn-eliminar').style.display = 'none';
         listar();
       })
       .catch(function (err) { setStatus('Error de conexión: ' + err.message, 'err'); });

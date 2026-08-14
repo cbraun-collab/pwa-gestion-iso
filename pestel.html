@@ -16,7 +16,7 @@
   .mono{font-family:'JetBrains Mono',monospace;}
   header{background:var(--teal); color:#fff; padding:20px 24px;}
   .header-inner{max-width:980px; margin:0 auto; display:flex; align-items:center; gap:14px;}
-  .header-logo{height:26px; width:auto;}
+  .header-logo{height:52px; width:auto;}
   .back{color:#fff; opacity:.8; text-decoration:none; font-size:13px;}
   .back:hover{opacity:1;}
   h1{margin:0; font-size:18px; font-weight:600;}
@@ -41,6 +41,8 @@
   .btn-primary{background:var(--orange); color:#fff;}
   .btn-primary:hover{background:#B93B1A;}
   .btn-secondary{background:transparent; color:var(--teal-light); border:1px solid var(--line);}
+  .btn-danger{background:transparent; color:#B93B1A; border:1px solid #E5B8A8;}
+  .btn-danger:hover{background:#FBEAE5;}
   .status{font-size:12.5px; color:#6B7A7E;}
   .status.ok{color:#2C6E45;}
   .status.err{color:#B93B1A;}
@@ -193,6 +195,7 @@
       <div class="actions">
         <button type="submit" class="btn-primary">Guardar</button>
         <button type="button" class="btn-secondary" id="btn-cancelar" style="display:none;">Cancelar edición</button>
+          <button type="button" class="btn-danger" id="btn-eliminar" style="display:none;">🗑 Eliminar</button>
         <span class="status" id="status"></span>
       </div>
     </form>
@@ -302,6 +305,10 @@
     document.getElementById('f-descripcion').value = opt.dataset.descripcion;
     if (opt.dataset.ambito) document.getElementById('f-ambito').value = opt.dataset.ambito;
     if (opt.dataset.obra) document.getElementById('f-obra').value = opt.dataset.obra;
+    // Marca este ítem como ya usado, para no poder importarlo dos veces
+    opt.disabled = true;
+    if (opt.textContent.indexOf('✓ Ya usado — ') !== 0) opt.textContent = '✓ Ya usado — ' + opt.textContent;
+    this.value = ''; // vuelve a "No importar" para el próximo ítem
   });
 
   const form = document.getElementById('form-pestel');
@@ -310,6 +317,16 @@
   const formTitle = document.getElementById('form-title');
 
   function setStatus(msg, tipo) { statusEl.textContent = msg; statusEl.className = 'status' + (tipo ? ' ' + tipo : ''); }
+  // Marca como ya usados (y bloqueados) los destinos donde este item ya se
+  // replico antes, para no poder duplicar la copia. Con '' resetea todo.
+  function aplicarReplicadoPrevio(replicadoStr) {
+    const yaUsados = String(replicadoStr || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+    document.querySelectorAll('.replicar-check').forEach(function (chk) {
+      if (yaUsados.indexOf(chk.value) !== -1) { chk.checked = true; chk.disabled = true; }
+      else { chk.checked = false; chk.disabled = false; }
+    });
+  }
+
   function escapeHtml(str) {
     if (str === undefined || str === null) return '';
     return String(str).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
@@ -372,7 +389,8 @@
     document.getElementById('f-responsables').value = r['Responsables de ejecución'] || '';
     formTitle.textContent = 'Editando factor PESTEL';
     btnCancelar.style.display = 'inline-block';
-    document.getElementById('replicar-bloque').style.display = 'none';
+    document.getElementById('btn-eliminar').style.display = 'inline-block';
+    aplicarReplicadoPrevio(r['Replicado_a']);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -381,7 +399,30 @@
     document.getElementById('f-id').value = '';
     formTitle.textContent = 'Nuevo factor PESTEL';
     btnCancelar.style.display = 'none';
-    document.getElementById('replicar-bloque').style.display = '';
+    document.getElementById('btn-eliminar').style.display = 'none';
+    aplicarReplicadoPrevio('');
+  });
+
+  document.getElementById('btn-eliminar').addEventListener('click', function () {
+    const id = document.getElementById('f-id').value;
+    if (!id) return;
+    if (!confirm('¿Eliminar este factor PESTEL? Esta acción no se puede deshacer.')) return;
+    fetch(APP_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ tabla: TABLA, accion: 'eliminar', id: id, usuario: USUARIO, clave: APP_KEY })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) { setStatus('Error: ' + data.error, 'err'); return; }
+        form.reset();
+        document.getElementById('f-id').value = '';
+        formTitle.textContent = 'Nuevo factor PESTEL';
+        btnCancelar.style.display = 'none';
+        document.getElementById('btn-eliminar').style.display = 'none';
+        aplicarReplicadoPrevio('');
+        listar();
+      })
+      .catch(function (err) { setStatus('Error de conexión: ' + err.message, 'err'); });
   });
 
   form.addEventListener('submit', function (e) {
@@ -432,7 +473,8 @@
         document.getElementById('f-id').value = '';
         formTitle.textContent = 'Nuevo factor PESTEL';
         btnCancelar.style.display = 'none';
-        document.getElementById('replicar-bloque').style.display = '';
+    document.getElementById('btn-eliminar').style.display = 'none';
+        aplicarReplicadoPrevio('');
         listar();
       })
       .catch(function (err) { setStatus('Error de conexión: ' + err.message, 'err'); });

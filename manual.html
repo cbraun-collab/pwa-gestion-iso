@@ -16,7 +16,7 @@
   .mono{font-family:'JetBrains Mono',monospace;}
   header{background:var(--teal); color:#fff; padding:20px 24px;}
   .header-inner{max-width:880px; margin:0 auto; display:flex; align-items:center; gap:14px;}
-  .header-logo{height:26px; width:auto;}
+  .header-logo{height:52px; width:auto;}
   .back{color:#fff; opacity:.8; text-decoration:none; font-size:13px;}
   .back:hover{opacity:1;}
   h1{margin:0; font-size:18px; font-weight:600;}
@@ -64,7 +64,9 @@
     <a href="#fuentes">4. Fuentes externas conectadas</a>
     <a href="#informe">5. Generar el Informe de Gerencia</a>
     <a href="#anual">6. Qué revisar cada año</a>
-    <a href="#pendientes">7. Pendientes conocidos</a>
+    <a href="#pruebas">8. Cómo probar sin miedo a romper algo</a>
+    <a href="#planilla-base">9. Mantener actualizada la planilla comercial</a>
+    <a href="#pendientes">10. Pendientes conocidos</a>
   </nav>
 
   <section id="idea">
@@ -154,8 +156,28 @@
     </ul>
   </section>
 
+  <section id="pruebas">
+    <h2>8. Cómo probar sin miedo a romper algo</h2>
+    <p>No existe un "modo de prueba" separado — todo lo que escribes en los 7 módulos editables (Partes Interesadas, FODA, PESTEL, Balance Scorecard, Riesgos y Oportunidades, Hallazgos, Compromisos) queda guardado de inmediato en la Sheet maestra, igual que un dato real.</p>
+    <div class="regla">
+      <strong>Antes de probar a fondo:</strong>
+      <ul>
+        <li>En Google Sheets: Archivo → Historial de versiones → <strong>Nombrar la versión actual</strong>. Así tienes un punto de vuelta claro antes de empezar a hacer pruebas.</li>
+        <li>Al terminar de probar, busca tus registros de prueba en el módulo correspondiente (suelen ser fáciles de identificar por el nombre que les pusiste) y bórralos ahí mismo, o directamente en la fila del Sheet.</li>
+        <li>Si usaste el checkbox "Replicar a" en una prueba, revisa también los módulos donde se haya copiado, y bórralo ahí también.</li>
+      </ul>
+    </div>
+    <p>Si en algún momento algo queda mal y no encuentras cómo deshacerlo, siempre puedes restaurar la Sheet completa a la versión que nombraste, desde Archivo → Historial de versiones.</p>
+  </section>
+
+  <section id="planilla-base">
+    <h2>9. Mantener actualizada la planilla comercial</h2>
+    <p>Las extracciones de Centro de Costos, E° OBRAS y KPIs comerciales solo son tan buenas como la información que tú (o tu equipo) mantengan al día en la planilla comercial. Si esa planilla queda atrasada, el informe de gerencia y el Panel de Control van a reflejar datos viejos, aunque la extracción en sí funcione perfecto.</p>
+    <div class="tip">Recomendación: revisa y actualiza la planilla comercial de forma periódica (por ejemplo, antes de cada actualización mensual de fuentes), no solo cuando te acuerdes.</div>
+  </section>
+
   <section id="pendientes">
-    <h2>7. Pendientes conocidos</h2>
+    <h2>10. Pendientes conocidos</h2>
     <p>No es que algo esté roto — es lo que aún falta construir:</p>
     <ul>
       <li>Retirar FOR-SGC-004 como archivo aparte una vez que Balance Scorecard esté completo en la PWA.</li>
