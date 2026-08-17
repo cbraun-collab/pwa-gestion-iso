@@ -134,6 +134,9 @@
       <li><strong>Desde la app (hoy solo No Conformidades):</strong> página <a class="link-app" href="no-conformidades.html">No Conformidades</a>, botón "Actualizar desde FOR-SGC-001".</li>
     </ul>
     <p>Cada actualización reemplaza por completo el snapshot anterior — nunca se duplica. Puedes correrla cuando quieras; el momento lógico es justo antes de generar el informe mensual.</p>
+    <div class="regla">
+      <strong>⚠️ Si una extracción trae todo en $0 o vacío</strong>, aunque sepas que el archivo tiene datos: revisa primero si la pestaña tiene un <strong>filtro activo</strong> (Datos → Crear un filtro). Un filtro activo puede hacer que Apps Script lea la información de forma incompleta, aunque los datos estén ahí y se vean bien al abrir el archivo directamente. Quítalo (Datos → Quitar filtro) antes de correr la extracción de nuevo.
+    </div>
   </section>
 
   <section id="informe">
