@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitoreo Mensual · Gestión Integrada ISO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#003B49; --teal-light:#0A5568; --orange:#CF4520;
+    --cream:#F7F5F0; --ink:#12222A; --line:#DCE3E1; --card-bg:#FFFFFF; --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--cream); color:var(--ink); font-family:'Space Grotesk',sans-serif; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  header{background:var(--teal); color:#fff; padding:20px 24px;}
+  .header-inner{max-width:1200px; margin:0 auto; display:flex; align-items:center; gap:14px;}
+  .header-logo{height:52px; width:auto;}
+  .back{color:#fff; opacity:.8; text-decoration:none; font-size:13px;}
+  .back:hover{opacity:1;}
+  h1{margin:0; font-size:18px; font-weight:600;}
+  .code-pill{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:rgba(255,255,255,.12); padding:3px 9px; border-radius:999px; margin-left:auto;}
+  main{max-width:1200px; margin:0 auto; padding:28px 24px 64px;}
+  .aviso{background:#EAF1F1; border:1px solid #C9DEDE; border-radius:10px; padding:12px 16px; font-size:12px; color:#0A5568; margin-bottom:22px;}
+  .panel{background:var(--card-bg); border:1px solid var(--line); border-radius:var(--radius); padding:22px; margin-bottom:22px; overflow-x:auto;}
+  .panel h2{margin:0 0 4px; font-size:16px; font-weight:600;}
+  .panel .sub{margin:0 0 16px; font-size:12.5px; color:#6B7A7E;}
+  .refresh-bar{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:12px; flex-wrap:wrap;}
+  .refresh-bar button{
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12.5px;
+    padding:8px 14px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; color:var(--teal-light);
+  }
+  .updated-at{font-size:11px; color:#8A9A9E; font-family:'JetBrains Mono',monospace;}
+  .legend{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:16px; font-size:11.5px; color:#4B5D63;}
+  .legend span{display:inline-flex; align-items:center; gap:5px;}
+  .legend .sw{width:12px; height:12px; border-radius:3px; display:inline-block;}
+  table.grid{border-collapse:collapse; font-size:11.5px; min-width:100%;}
+  table.grid th, table.grid td{border:1px solid #EEF1F0; padding:6px 8px; text-align:center; white-space:nowrap;}
+  table.grid th{background:#EAF1F1; font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; color:#3F4E52; position:sticky; top:0;}
+  table.grid td.info{text-align:left; white-space:normal; max-width:260px; font-size:12px;}
+  table.grid td.num{font-family:'JetBrains Mono',monospace; color:#8A9A9E;}
+  table.grid th.sticky-col, table.grid td.sticky-col{position:sticky; left:0; background:#fff; z-index:1;}
+  table.grid th.sticky-col{background:#EAF1F1; z-index:2;}
+  .cell-ok{background:#2C6E45; color:#fff; font-weight:600;}
+  .cell-parcial{background:#E9A93B; color:#fff; font-weight:600;}
+  .cell-no{background:#B93B1A; color:#fff; font-weight:600;}
+  .cell-vacia{background:#FAFAF8; color:#C4CCCB;}
+  .empty{padding:24px; text-align:center; color:#8A9A9E; font-size:13px;}
+  .filtros{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
+  .filtros select{padding:6px 10px; border-radius:8px; border:1px solid var(--line); font-family:'Space Grotesk',sans-serif; font-size:12.5px; background:#fff;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <img src="logo-senercom.png" alt="Senercom" class="header-logo">
+    <a class="back" href="index.html">&larr; Inicio</a>
+    <h1>Monitoreo Mensual</h1>
+    <span class="code-pill mono">Vista tipo grilla — FOR-SGC-004</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="aviso">
+    Esta vista arma la grilla de cumplimiento mes a mes (igual al formato de tu planilla) usando el historial de snapshots ya guardado en <strong>Monitoreo_SGC004</strong>. Cada vez que corres "Actualizar todas las fuentes" (o el correo semanal se envía) queda una columna nueva para el mes en curso — así se va completando la grilla solo, mes tras mes, sin que tengas que hacer nada extra acá.
+  </div>
+
+  <div class="panel">
+    <div class="refresh-bar">
+      <span class="updated-at" id="updated-at">Cargando...</span>
+      <button onclick="cargarTodo()">↻ Actualizar</button>
+    </div>
+    <div class="legend">
+      <span><span class="sw" style="background:#2C6E45;"></span> Cumplido (100% o "Sí")</span>
+      <span><span class="sw" style="background:#E9A93B;"></span> Parcial (&lt;100%)</span>
+      <span><span class="sw" style="background:#B93B1A;"></span> No cumplido</span>
+      <span><span class="sw" style="background:#FAFAF8; border:1px solid #EEF1F0;"></span> Sin dato ese mes (normal si es de medición anual / única vez)</span>
+    </div>
+    <div class="filtros">
+      <select id="filtro-origen"><option value="">Todos los orígenes</option></select>
+      <select id="filtro-frecuencia"><option value="">Todas las frecuencias</option></select>
+    </div>
+    <div id="grid-container"><div class="empty">Cargando...</div></div>
+  </div>
+
+</main>
+
+<script>
+  const APP_URL = 'https://script.google.com/macros/s/AKfycbzCquDf6sVRaGePNemoq1CMlZN9wdivpRmCw7omiSkgHiIcWIcf8jhC5t9Lc01UhMt7hw/exec';
+  const APP_KEY = 'senercom-sgi-7x9K2m';
+  const MESES_ORDEN = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sept', 'oct', 'nov', 'dic'];
+
+  function escapeHtml(str) {
+    if (str === undefined || str === null) return '';
+    return String(str).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
+  }
+
+  function claseCelda(valor) {
+    const v = String(valor || '').trim().toLowerCase();
+    if (!v) return { clase: 'cell-vacia', texto: '-' };
+    if (v === 'no') return { clase: 'cell-no', texto: 'No' };
+    const num = parseFloat(v.replace('%', '').replace(',', '.'));
+    if (!isNaN(num)) {
+      if (num >= 100) return { clase: 'cell-ok', texto: Math.round(num) + '%' };
+      if (num > 0) return { clase: 'cell-parcial', texto: Math.round(num) + '%' };
+      return { clase: 'cell-no', texto: v };
+    }
+    if (v === 'sí' || v === 'si' || v === 'ok' || v === 'cumplido') return { clase: 'cell-ok', texto: 'Sí' };
+    return { clase: 'cell-parcial', texto: escapeHtml(String(valor).slice(0, 6)) };
+  }
+
+  // Ordena "ene-26", "feb-26"... cronológicamente
+  function ordenMes(mesTxt) {
+    const partes = String(mesTxt || '').split('-');
+    const idxMes = MESES_ORDEN.indexOf(partes[0]);
+    const anio = parseInt(partes[1], 10) || 0;
+    return anio * 100 + (idxMes === -1 ? 0 : idxMes);
+  }
+
+  function cargarTodo() {
+    document.getElementById('updated-at').textContent = 'Cargando...';
+    const callbackName = 'cb_' + Date.now();
+    window[callbackName] = function (data) {
+      renderGrid(data.registros || []);
+      delete window[callbackName];
+      document.body.removeChild(script);
+    };
+    const script = document.createElement('script');
+    script.src = APP_URL + '?accion=listar&tabla=Monitoreo_SGC004&clave=' + APP_KEY + '&callback=' + callbackName;
+    document.body.appendChild(script);
+  }
+
+  function renderGrid(registros) {
+    const cont = document.getElementById('grid-container');
+    if (!registros.length) {
+      cont.innerHTML = '<div class="empty">Aún no hay snapshots del Panel de Monitoreo. Corre "Actualizar todas las fuentes" desde Generar Informe, o espera al próximo correo semanal (que también lo actualiza solo).</div>';
+      document.getElementById('updated-at').textContent = '';
+      return;
+    }
+
+    // --- filtros ---
+    const origenes = Array.from(new Set(registros.map(function (r) { return r['Origen']; }).filter(Boolean))).sort();
+    const frecuencias = Array.from(new Set(registros.map(function (r) { return r['Frecuencia']; }).filter(Boolean))).sort();
+    const selOrigen = document.getElementById('filtro-origen');
+    const selFrecuencia = document.getElementById('filtro-frecuencia');
+    if (!selOrigen.dataset.poblado) {
+      origenes.forEach(function (o) { selOrigen.innerHTML += '<option value="' + escapeHtml(o) + '">' + escapeHtml(o) + '</option>'; });
+      frecuencias.forEach(function (f) { selFrecuencia.innerHTML += '<option value="' + escapeHtml(f) + '">' + escapeHtml(f) + '</option>'; });
+      selOrigen.dataset.poblado = '1';
+      selOrigen.addEventListener('change', function () { renderGrid(registros); });
+      selFrecuencia.addEventListener('change', function () { renderGrid(registros); });
+    }
+    const filtroOrigen = selOrigen.value;
+    const filtroFrecuencia = selFrecuencia.value;
+    const filtrados = registros.filter(function (r) {
+      return (!filtroOrigen || r['Origen'] === filtroOrigen) && (!filtroFrecuencia || r['Frecuencia'] === filtroFrecuencia);
+    });
+
+    // --- filas únicas por N° + Objetivo (para no duplicar si el mismo ítem aparece en varios meses) ---
+    const filasPorClave = {};
+    const ordenFilas = [];
+    filtrados.forEach(function (r) {
+      const clave = (r['Num'] || '') + '||' + (r['Objetivo'] || '');
+      if (!filasPorClave[clave]) {
+        filasPorClave[clave] = { info: r, meses: {} };
+        ordenFilas.push(clave);
+      }
+      filasPorClave[clave].meses[r['Mes']] = r['Cumplimiento mes'];
+    });
+    ordenFilas.sort(function (a, b) {
+      const na = Number(filasPorClave[a].info['Num']) || 0;
+      const nb = Number(filasPorClave[b].info['Num']) || 0;
+      return na - nb;
+    });
+
+    // --- columnas: todos los Año-Mes presentes, en orden cronológico ---
+    const columnas = Array.from(new Set(filtrados.map(function (r) { return r['Mes']; }).filter(Boolean)));
+    columnas.sort(function (a, b) { return ordenMes(a) - ordenMes(b); });
+
+    if (!ordenFilas.length || !columnas.length) {
+      cont.innerHTML = '<div class="empty">Sin registros que coincidan con el filtro.</div>';
+      return;
+    }
+
+    let html = '<table class="grid"><thead><tr>' +
+      '<th class="sticky-col" style="text-align:left;">N°</th>' +
+      '<th class="sticky-col" style="text-align:left; min-width:220px;">Objetivo / Actividad</th>' +
+      '<th style="text-align:left;">Origen</th>' +
+      '<th style="text-align:left;">Frecuencia</th>' +
+      '<th style="text-align:left;">Responsable</th>';
+    columnas.forEach(function (m) { html += '<th>' + m + '</th>'; });
+    html += '</tr></thead><tbody>';
+
+    ordenFilas.forEach(function (clave) {
+      const fila = filasPorClave[clave];
+      const info = fila.info;
+      html += '<tr>' +
+        '<td class="sticky-col num">' + (info['Num'] || '-') + '</td>' +
+        '<td class="sticky-col info">' + escapeHtml(info['Objetivo']) + '</td>' +
+        '<td>' + escapeHtml(info['Origen']) + '</td>' +
+        '<td>' + escapeHtml(info['Frecuencia']) + '</td>' +
+        '<td>' + escapeHtml(info['Responsable']) + '</td>';
+      columnas.forEach(function (m) {
+        const valor = fila.meses[m];
+        const c = claseCelda(valor);
+        html += '<td class="' + c.clase + '" title="' + escapeHtml(String(valor || '')) + '">' + c.texto + '</td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    cont.innerHTML = html;
+
+    let ultima = '';
+    registros.forEach(function (r) { if (r['creado_fecha'] > ultima) ultima = r['creado_fecha']; });
+    document.getElementById('updated-at').textContent = ultima ? '· Último snapshot: ' + new Date(ultima).toLocaleString('es-CL') : '';
+  }
+
+  cargarTodo();
+</script>
+
+</body>
+</html>

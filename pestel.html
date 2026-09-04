@@ -22,15 +22,16 @@
   h1{margin:0; font-size:18px; font-weight:600;}
   .code-pill{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:rgba(255,255,255,.12); padding:3px 9px; border-radius:999px; margin-left:auto;}
   main{max-width:980px; margin:0 auto; padding:28px 24px 64px;}
+  .tabs{display:flex; gap:6px; margin-bottom:20px; border-bottom:1px solid var(--line);}
+  .tab-btn{background:none; border:none; padding:10px 16px; font-family:'Space Grotesk',sans-serif; font-size:13.5px; font-weight:500; color:#8A9A9E; cursor:pointer; border-bottom:2px solid transparent;}
+  .tab-btn.active{color:var(--teal); border-bottom-color:var(--orange);}
+  .tab-panel{display:none;} .tab-panel.active{display:block;}
   .panel{background:var(--card-bg); border:1px solid var(--line); border-radius:var(--radius); padding:22px; margin-bottom:22px;}
   .panel h2{margin:0 0 4px; font-size:16px; font-weight:600;}
   .panel .sub{margin:0 0 18px; font-size:12.5px; color:#6B7A7E;}
   label{display:block; font-size:12.5px; font-weight:500; color:#3F4E52; margin-bottom:5px; margin-top:14px;}
   label:first-of-type{margin-top:0;}
-  input[type=text], textarea, select{
-    width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:8px;
-    font-family:'Space Grotesk',sans-serif; font-size:14px; color:var(--ink); background:#FCFCFB;
-  }
+  input[type=text], textarea, select{width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:8px; font-family:'Space Grotesk',sans-serif; font-size:14px; color:var(--ink); background:#FCFCFB;}
   textarea{resize:vertical; min-height:52px;}
   input:focus, textarea:focus, select:focus{outline:2px solid var(--teal-light); outline-offset:1px; border-color:var(--teal-light);}
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
@@ -44,33 +45,16 @@
   .btn-danger{background:transparent; color:#B93B1A; border:1px solid #E5B8A8;}
   .btn-danger:hover{background:#FBEAE5;}
   .status{font-size:12.5px; color:#6B7A7E;}
-  .status.ok{color:#2C6E45;}
-  .status.err{color:#B93B1A;}
-
-  .pestel-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
-  @media (max-width:760px){.pestel-grid{grid-template-columns:1fr 1fr;}}
-  @media (max-width:480px){.pestel-grid{grid-template-columns:1fr;}}
-  .pestel-col{border:1px solid var(--line); border-radius:10px; padding:12px; background:#FCFCFB;}
-  .pestel-col h3{margin:0 0 8px; font-size:11.5px; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.4px; color:var(--teal-light);}
-  .p-item{background:#fff; border:1px solid var(--line); border-radius:7px; padding:8px 9px; margin-bottom:6px; font-size:12.3px; line-height:1.4; cursor:pointer;}
-  .p-item .meta{display:block; margin-top:4px; font-size:10px; color:#8A9A9E; font-family:'JetBrains Mono',monospace;}
-  .p-empty{font-size:11.5px; color:#9AA8AC;}
-  .impacto-pos{color:#2C6E45;} .impacto-neg{color:#B93B1A;} .impacto-ind{color:#8A9A9E;}
-
-  .help-icon{display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:50%; background:var(--teal-light); color:#fff; font-size:10.5px; font-weight:700; cursor:pointer; vertical-align:middle; margin-left:4px;}
-  .modal-overlay{display:none; position:fixed; inset:0; background:rgba(18,34,42,.55); align-items:center; justify-content:center; z-index:50; padding:20px;}
-  .modal-overlay.open{display:flex;}
-  .modal-box{background:#fff; border-radius:14px; max-width:720px; width:100%; max-height:85vh; overflow-y:auto; padding:24px;}
-  .modal-box h3{margin:0 0 4px; font-size:16px;}
-  .modal-box .modal-sub{margin:0 0 16px; font-size:12.5px; color:#6B7A7E;}
-  .modal-close{float:right; background:none; border:none; font-size:20px; cursor:pointer; color:#8A9A9E; padding:0;}
-  .scale-row{display:grid; grid-template-columns:34px 90px 1fr; gap:10px; padding:9px 0; border-bottom:1px solid #EEF1F0; font-size:12.5px; align-items:start;}
-  .scale-row .n{font-family:'JetBrains Mono',monospace; font-weight:700; text-align:center; border-radius:6px; padding:3px 0; color:#fff; align-self:start;}
-  .scale-row .n.n1{background:#2C6E45;} .scale-row .n.n2{background:#5C8F3F;} .scale-row .n.n3{background:#C8973A;}
-  .scale-row .n.n4{background:#CF4520;} .scale-row .n.n5{background:#8A1F1F;}
-  .scale-row .lbl{font-weight:600;}
-  .scale-row .desc{color:#4B5D63; line-height:1.4;}
-
+  .status.ok{color:#2C6E45;} .status.err{color:#B93B1A;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th{text-align:left; font-family:'JetBrains Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; color:#8AA0A5; padding:8px 10px; border-bottom:1px solid var(--line);}
+  td{padding:10px 10px; border-bottom:1px solid #EEF1F0; vertical-align:top;}
+  tr:hover td{background:#FAFAF8;}
+  .tag{font-size:10.5px; padding:2px 8px; border-radius:999px; font-family:'JetBrains Mono',monospace; background:#EAF1F1; color:var(--teal-light);}
+  .tag.pos{background:#EAF5EE; color:#2C6E45;} .tag.neg{background:#FBEAE5; color:#B93B1A;} .tag.ind{background:#F5EDE1; color:#8A5A2A;}
+  .empty{padding:30px; text-align:center; color:#8A9A9E; font-size:13px;}
+  .edit-link{color:var(--teal-light); font-size:12px; cursor:pointer; text-decoration:underline;}
+  .meta-cell{font-size:11px; color:#8A9A9E; font-family:'JetBrains Mono',monospace; line-height:1.5;}
   .replicar-grid{display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:6px;}
   .check-inline{display:flex; align-items:center; gap:7px; font-size:12.8px; font-weight:400; color:#3F4E52; margin:0;}
   .check-inline input{width:auto; margin:0;}
@@ -88,135 +72,128 @@
 </header>
 
 <main>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="carga">Cargar factores</button>
+    <button class="tab-btn" data-tab="vista">Vista por categoría</button>
+  </div>
 
-  <div class="panel">
-    <h2 id="form-title">Nuevo factor PESTEL</h2>
-    <p class="sub">Mismo formato del documento — categoría, factor, plazo e impacto.</p>
+  <div class="tab-panel active" id="tab-carga">
+    <div class="panel">
+      <h2 id="form-title">Nuevo factor PESTEL</h2>
+      <p class="sub">Político, Económico, Social, Tecnológico, Ecológico-Ambiental o Legal.</p>
 
-    <form id="form-pestel">
-      <input type="hidden" id="f-id" value="">
+      <form id="form-pestel">
+        <input type="hidden" id="f-id" value="">
 
-      <div id="bloque-importar" style="background:#EAF1F1; border:1px solid #C9DEDE; border-radius:8px; padding:12px 14px; margin-bottom:16px;">
-        <label for="importar-foda" style="margin-top:0;">Importar desde FODA (opcional)</label>
-        <select id="importar-foda"><option value="">No importar — escribir manualmente</option></select>
-      </div>
-
-      <div class="row2">
-        <div>
-          <label for="f-categoria">Categoría PESTEL</label>
-          <select id="f-categoria" required>
-            <option value="">Selecciona...</option>
-            <option value="Político">Político</option>
-            <option value="Económico">Económico</option>
-            <option value="Social">Social</option>
-            <option value="Tecnológico">Tecnológico</option>
-            <option value="Ecológico-Ambiental">Ecológico-Ambiental</option>
-            <option value="Legal">Legal</option>
-          </select>
+        <div class="row3">
+          <div>
+            <label for="f-categoria">Categoría PESTEL</label>
+            <select id="f-categoria" required>
+              <option value="">Selecciona...</option>
+              <option value="Político">Político</option>
+              <option value="Económico">Económico</option>
+              <option value="Social">Social</option>
+              <option value="Tecnológico">Tecnológico</option>
+              <option value="Ecológico-Ambiental">Ecológico-Ambiental</option>
+              <option value="Legal">Legal</option>
+            </select>
+          </div>
+          <div>
+            <label for="f-plazo">Plazo</label>
+            <select id="f-plazo">
+              <option value="">Selecciona...</option>
+              <option value="Corto">Corto</option>
+              <option value="Mediano">Mediano</option>
+              <option value="Largo">Largo</option>
+            </select>
+          </div>
+          <div>
+            <label for="f-impacto">Impacto</label>
+            <select id="f-impacto">
+              <option value="">Selecciona...</option>
+              <option value="Positivo">Positivo</option>
+              <option value="Negativo">Negativo</option>
+              <option value="Indiferente">Indiferente</option>
+            </select>
+          </div>
         </div>
-        <div>
-          <label for="f-factor">Factor</label>
-          <input type="text" id="f-factor" placeholder="Ej: Conflictos bélicos internacionales" required>
-        </div>
-      </div>
 
-      <label for="f-descripcion">Descripción del factor</label>
-      <textarea id="f-descripcion"></textarea>
+        <label for="f-factor">Factor</label>
+        <input type="text" id="f-factor" placeholder="Nombre corto del factor" required>
 
-      <div class="row3">
-        <div>
-          <label for="f-plazo">Plazo</label>
-          <select id="f-plazo">
-            <option value="">-</option>
-            <option value="Corto">Corto (≤1 año)</option>
-            <option value="Mediano">Mediano (1-3 años)</option>
-            <option value="Largo">Largo (≥3 años)</option>
-          </select>
-        </div>
-        <div>
-          <label for="f-impacto-tipo">Impacto</label>
-          <select id="f-impacto-tipo">
-            <option value="">-</option>
-            <option value="Positivo">Positivo</option>
-            <option value="Negativo">Negativo</option>
-            <option value="Indiferente">Indiferente</option>
-          </select>
-        </div>
-        <div>
-          <label for="f-ambito">Ámbito</label>
-          <select id="f-ambito" required>
-            <option value="">Selecciona...</option>
-            <option value="Terreno">Terreno</option>
-            <option value="Oficina">Oficina</option>
-          </select>
-        </div>
-      </div>
+        <label for="f-descripcion">Descripción del factor</label>
+        <textarea id="f-descripcion" required></textarea>
 
-      <div class="row2">
-        <div>
-          <label for="f-obra">Obra (opcional)</label>
-          <input type="text" id="f-obra" placeholder="Solo si es específico de un proyecto">
+        <div class="row3">
+          <div>
+            <label for="f-ambito">Ámbito</label>
+            <select id="f-ambito" required>
+              <option value="">Selecciona...</option>
+              <option value="Terreno">Terreno</option>
+              <option value="Oficina">Oficina</option>
+            </select>
+          </div>
+          <div>
+            <label for="f-obra">Obra (opcional)</label>
+            <input type="text" id="f-obra" placeholder="Solo si es específico de un proyecto">
+          </div>
+          <div></div>
         </div>
-        <div></div>
-      </div>
 
-      <div class="row2">
-        <div>
-          <label for="f-prob">Probabilidad (1-5) <span class="help-icon" onclick="mostrarAyuda('prob')">?</span></label>
-          <select id="f-prob"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+        <div class="row2">
+          <div>
+            <label for="f-prob">Probabilidad (1-5, opcional)</label>
+            <select id="f-prob"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+          </div>
+          <div>
+            <label for="f-consec">Consecuencia (1-5, opcional)</label>
+            <select id="f-consec"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+          </div>
         </div>
-        <div>
-          <label for="f-consecuencia">Consecuencia (1-5) <span class="help-icon" onclick="mostrarAyuda('consec')">?</span></label>
-          <select id="f-consecuencia"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+
+        <label style="display:flex; align-items:center; gap:8px; margin-top:16px;">
+          <input type="checkbox" id="f-monitorear" style="width:auto;">
+          Monitorear en Panel de Control
+        </label>
+
+        <div id="replicar-bloque">
+          <label style="margin-top:16px;">Replicar automáticamente a (opcional)</label>
+          <div class="replicar-grid">
+            <label class="check-inline"><input type="checkbox" class="replicar-check" value="Partes_Interesadas"> Partes Interesadas</label>
+            <label class="check-inline"><input type="checkbox" class="replicar-check" value="FODA" data-extra="Categoría">FODA<select class="replicar-extra-select" data-for="FODA" style="display:none; width:auto; font-size:11px; padding:2px 5px; margin-left:2px;"><option value="">Categoría...</option><option value="Fortaleza">Fortaleza</option><option value="Debilidad">Debilidad</option><option value="Oportunidad">Oportunidad</option><option value="Amenaza">Amenaza</option></select></label>
+            <label class="check-inline"><input type="checkbox" class="replicar-check" value="Balance_Scorecard" data-extra="Ámbito">Balance Scorecard<select class="replicar-extra-select" data-for="Balance_Scorecard" style="display:none; width:auto; font-size:11px; padding:2px 5px; margin-left:2px;"><option value="">Ámbito...</option><option value="Financiero">Financiero</option><option value="Personas">Personas</option><option value="Procesos">Procesos</option><option value="Sociedad y Ambiente">Sociedad y Ambiente</option><option value="Clientes">Clientes</option></select></label>
+            <label class="check-inline"><input type="checkbox" class="replicar-check" value="Riesgos_Oportunidades" data-extra="Tipo">Riesgos y Oportunidades<select class="replicar-extra-select" data-for="Riesgos_Oportunidades" style="display:none; width:auto; font-size:11px; padding:2px 5px; margin-left:2px;"><option value="">Tipo...</option><option value="Riesgo">Riesgo</option><option value="Oportunidad">Oportunidad</option></select></label>
+            <label class="check-inline"><input type="checkbox" class="replicar-check" value="Hallazgos"> Hallazgos</label>
+            <label class="check-inline"><input type="checkbox" class="replicar-check" value="Compromisos_Medidas"> Compromisos y Medidas</label>
+          </div>
+          <p class="sub" style="margin:4px 0 0;">Crea una copia en cada módulo marcado. Solo aplica al crear un factor nuevo. Algunos módulos piden elegir una categoría — sin ella, el ítem quedaría creado pero invisible en esa pantalla.</p>
         </div>
-      </div>
 
-      <label style="display:flex; align-items:center; gap:8px; margin-top:16px;">
-        <input type="checkbox" id="f-monitorear" style="width:auto;">
-        Monitorear en Panel de Control
-      </label>
+        <label for="f-responsables">Responsables de ejecución (mínimo 2 personas, separadas por coma)</label>
+        <input type="text" id="f-responsables" placeholder="Ej: Carlos Braun, Cristián Menéndez" required>
 
-      <div id="replicar-bloque">
-        <label style="margin-top:16px;">Replicar automáticamente a (opcional)</label>
-        <div class="replicar-grid">
-          <label class="check-inline"><input type="checkbox" class="replicar-check" value="Partes_Interesadas"> Partes Interesadas</label>
-          <label class="check-inline"><input type="checkbox" class="replicar-check" value="FODA"> FODA</label>
-          <label class="check-inline"><input type="checkbox" class="replicar-check" value="Balance_Scorecard"> Balance Scorecard</label>
-          <label class="check-inline"><input type="checkbox" class="replicar-check" value="Riesgos_Oportunidades"> Riesgos y Oportunidades</label>
-          <label class="check-inline"><input type="checkbox" class="replicar-check" value="Hallazgos"> Hallazgos</label>
-          <label class="check-inline"><input type="checkbox" class="replicar-check" value="Compromisos_Medidas"> Compromisos y Medidas</label>
-        </div>
-        <p class="sub" style="margin:4px 0 0;">Crea una copia del ítem en cada módulo marcado (misma descripción, ámbito, obra y responsables). Solo aplica al crear un ítem nuevo.</p>
-      </div>
-
-      <label for="f-responsables">Responsables de ejecución (mínimo 2 personas, separadas por coma)</label>
-      <input type="text" id="f-responsables" placeholder="Ej: Carlos Braun, Cristián Menéndez" required>
-
-      <div class="actions">
-        <button type="submit" class="btn-primary">Guardar</button>
-        <button type="button" class="btn-secondary" id="btn-cancelar" style="display:none;">Cancelar edición</button>
+        <div class="actions">
+          <button type="submit" class="btn-primary" id="btn-guardar">Guardar</button>
+          <button type="button" class="btn-secondary" id="btn-cancelar" style="display:none;">Cancelar edición</button>
           <button type="button" class="btn-danger" id="btn-eliminar" style="display:none;">🗑 Eliminar</button>
-        <span class="status" id="status"></span>
-      </div>
-    </form>
+          <span class="status" id="status"></span>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Registros</h2>
+      <div id="tabla-container"><div class="empty">Cargando...</div></div>
+    </div>
   </div>
 
-  <div class="panel">
-    <h2>Vista PESTEL</h2>
-    <p class="sub">Agrupado por categoría, igual que el documento.</p>
-    <div class="pestel-grid" id="pestel-grid"></div>
+  <div class="tab-panel" id="tab-vista">
+    <div class="panel">
+      <h2>Vista por categoría</h2>
+      <div id="vista-categorias"></div>
+    </div>
   </div>
-
 </main>
-
-<div class="modal-overlay" id="modal-ayuda">
-  <div class="modal-box">
-    <button class="modal-close" onclick="cerrarAyuda()">&times;</button>
-    <h3 id="modal-title">Escala</h3>
-    <p class="modal-sub" id="modal-sub"></p>
-    <div id="modal-contenido"></div>
-  </div>
-</div>
 
 <script>
   const APP_URL = 'https://script.google.com/macros/s/AKfycbzCquDf6sVRaGePNemoq1CMlZN9wdivpRmCw7omiSkgHiIcWIcf8jhC5t9Lc01UhMt7hw/exec';
@@ -226,89 +203,14 @@
   const CATEGORIAS = ['Político', 'Económico', 'Social', 'Tecnológico', 'Ecológico-Ambiental', 'Legal'];
   let items = [];
 
-  // ---- Tablas oficiales (DOC-SGC-010) ----
-  const TABLA_PROB_RIESGO = [
-    { n: 1, lbl: 'Muy Baja', desc: 'Insignificante, sucede sólo en escenarios excepcionales. Nunca o no se ha presentado en los últimos 5 años.' },
-    { n: 2, lbl: 'Baja', desc: 'El riesgo podría ocurrir en algún momento, es poco común o frecuente. Al menos 1 vez en los últimos 5 años.' },
-    { n: 3, lbl: 'Moderada', desc: 'El riesgo puede ocurrir en algún momento. Al menos 1 vez en los últimos 2 años.' },
-    { n: 4, lbl: 'Alta', desc: 'El riesgo ocurrirá en la mayoría de las circunstancias. Al menos 1 vez en el último año.' },
-    { n: 5, lbl: 'Muy Alta', desc: 'Se espera que el riesgo ocurra en la mayoría de las circunstancias. Más de 1 vez al año.' }
-  ];
-  const TABLA_CONSEC_RIESGO = [
-    { n: 1, lbl: 'Bajo', desc: 'No genera pérdidas significativas ($0 a $500.000) ni compromete la imagen pública. Perjuicio tolerable.' },
-    { n: 2, lbl: 'Menor', desc: 'Pérdidas financieras de $500.001 a $5.000.000, impacto menor en presupuesto e imagen.' },
-    { n: 3, lbl: 'Moderado', desc: 'Pérdidas de $5.000.001 a $20.000.000. Retrasa el cumplimiento de objetivos.' },
-    { n: 4, lbl: 'Mayor', desc: 'Pérdidas de $20.000.001 a $50.000.000. Daña significativamente la continuidad operacional.' },
-    { n: 5, lbl: 'Crítico', desc: 'Pérdidas superiores a $50.000.000, impacto catastrófico. Riesgo para la continuidad del negocio.' }
-  ];
-  const TABLA_PROB_OPORTUNIDAD = [
-    { n: 1, lbl: 'Muy poco probable', desc: 'Muy poco probable (inexistente) por los altos costos frente al beneficio. No ocurre.' },
-    { n: 2, lbl: 'Largo plazo', desc: 'Relativamente probable a largo plazo (5 años).' },
-    { n: 3, lbl: 'Mediano plazo', desc: 'Se prevé que ocurra a mediano plazo (3 años).' },
-    { n: 4, lbl: 'Corto plazo', desc: 'Se prevé a corto plazo, beneficio alto respecto al costo (1 año).' },
-    { n: 5, lbl: 'Muy corto plazo', desc: 'Se prevé a corto plazo, beneficio muy alto respecto al costo (6 meses).' }
-  ];
-  const TABLA_CONSEC_OPORTUNIDAD = [
-    { n: 1, lbl: 'Insignificante', desc: 'Insignificantes beneficios. Ganancias no significativas ($0 a $500.000).' },
-    { n: 2, lbl: 'Leve', desc: 'Leves beneficios. Ganancias entre $500.001 y $5.000.000.' },
-    { n: 3, lbl: 'Mediano', desc: 'Medianos beneficios que afectan a un área. Ganancias entre $5.000.001 y $20.000.000.' },
-    { n: 4, lbl: 'Alto', desc: 'Beneficios que afectan a toda la organización. Ganancias entre $20.000.001 y $50.000.000.' },
-    { n: 5, lbl: 'Muy alto', desc: 'Altos beneficios en toda la organización. Ganancias sobre los $50.000.000.' }
-  ];
-  function renderTablaAyuda(filas) {
-    return filas.map(function (f) {
-      return '<div class="scale-row"><div class="n n' + f.n + '">' + f.n + '</div><div class="lbl">' + f.lbl + '</div><div class="desc">' + f.desc + '</div></div>';
-    }).join('');
-  }
-  window.mostrarAyuda = function (campo) {
-    const impacto = document.getElementById('f-impacto-tipo').value;
-    const esOportunidad = impacto === 'Positivo';
-    let filas, titulo;
-    if (campo === 'prob') { filas = esOportunidad ? TABLA_PROB_OPORTUNIDAD : TABLA_PROB_RIESGO; titulo = 'Probabilidad (1-5)'; }
-    else { filas = esOportunidad ? TABLA_CONSEC_OPORTUNIDAD : TABLA_CONSEC_RIESGO; titulo = 'Consecuencia (1-5)'; }
-    document.getElementById('modal-title').textContent = titulo;
-    document.getElementById('modal-sub').textContent = impacto
-      ? 'Escala para impacto ' + impacto.toLowerCase()
-      : 'Selecciona primero el Impacto (Positivo = tabla de oportunidad, Negativo/Indiferente = tabla de riesgo). Mostrando por defecto la escala de riesgo.';
-    document.getElementById('modal-contenido').innerHTML = renderTablaAyuda(filas);
-    document.getElementById('modal-ayuda').classList.add('open');
-  };
-  window.cerrarAyuda = function () { document.getElementById('modal-ayuda').classList.remove('open'); };
-  document.getElementById('modal-ayuda').addEventListener('click', function (e) { if (e.target === this) cerrarAyuda(); });
-
-  // ---- Importar desde FODA ----
-  function cargarFodaParaImportar() {
-    const callbackName = 'cb_foda_' + Date.now();
-    window[callbackName] = function (data) {
-      const registros = data.registros || [];
-      const sel = document.getElementById('importar-foda');
-      registros.forEach(function (r) {
-        const opt = document.createElement('option');
-        opt.value = r.id;
-        opt.textContent = '[' + r['Categoría'] + '] ' + (r['Descripción'] || '').slice(0, 70);
-        opt.dataset.descripcion = r['Descripción'] || '';
-        opt.dataset.ambito = r['Ámbito'] || '';
-        opt.dataset.obra = r['Obra'] || '';
-        sel.appendChild(opt);
-      });
-      delete window[callbackName];
-      document.body.removeChild(script);
-    };
-    const script = document.createElement('script');
-    script.src = APP_URL + '?accion=listar&tabla=FODA&clave=' + APP_KEY + '&callback=' + callbackName;
-    document.body.appendChild(script);
-  }
-  document.getElementById('importar-foda').addEventListener('change', function () {
-    const opt = this.options[this.selectedIndex];
-    if (!opt.value) return;
-    document.getElementById('f-factor').value = opt.dataset.descripcion.slice(0, 60);
-    document.getElementById('f-descripcion').value = opt.dataset.descripcion;
-    if (opt.dataset.ambito) document.getElementById('f-ambito').value = opt.dataset.ambito;
-    if (opt.dataset.obra) document.getElementById('f-obra').value = opt.dataset.obra;
-    // Marca este ítem como ya usado, para no poder importarlo dos veces
-    opt.disabled = true;
-    if (opt.textContent.indexOf('✓ Ya usado — ') !== 0) opt.textContent = '✓ Ya usado — ' + opt.textContent;
-    this.value = ''; // vuelve a "No importar" para el próximo ítem
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'vista') renderVista();
+    });
   });
 
   const form = document.getElementById('form-pestel');
@@ -317,62 +219,90 @@
   const formTitle = document.getElementById('form-title');
 
   function setStatus(msg, tipo) { statusEl.textContent = msg; statusEl.className = 'status' + (tipo ? ' ' + tipo : ''); }
-  // Marca como ya usados (y bloqueados) los destinos donde este item ya se
-  // replico antes, para no poder duplicar la copia. Con '' resetea todo.
+  function escapeHtml(str) { if (str === undefined || str === null) return ''; return String(str).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function formatearFecha(iso) { if (!iso) return '-'; const d = new Date(iso); if (isNaN(d)) return iso; return d.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
+
   function aplicarReplicadoPrevio(replicadoStr) {
     const yaUsados = String(replicadoStr || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
     document.querySelectorAll('.replicar-check').forEach(function (chk) {
       if (yaUsados.indexOf(chk.value) !== -1) { chk.checked = true; chk.disabled = true; }
       else { chk.checked = false; chk.disabled = false; }
     });
+    document.querySelectorAll('.replicar-extra-select').forEach(function (sel) { sel.style.display = 'none'; sel.value = ''; });
+  }
+  document.querySelectorAll('.replicar-check[data-extra]').forEach(function (chk) {
+    chk.addEventListener('change', function () {
+      const sel = document.querySelector('.replicar-extra-select[data-for="' + chk.value + '"]');
+      if (!sel) return;
+      sel.style.display = chk.checked ? 'inline-block' : 'none';
+      if (!chk.checked) sel.value = '';
+    });
+  });
+  function recolectarReplicarExtra() {
+    const extra = {}; let faltante = null;
+    document.querySelectorAll('.replicar-check[data-extra]:checked').forEach(function (chk) {
+      const sel = document.querySelector('.replicar-extra-select[data-for="' + chk.value + '"]');
+      const val = sel ? sel.value : '';
+      if (!val) { faltante = chk.value; return; }
+      extra[chk.value] = {}; extra[chk.value][chk.dataset.extra] = val;
+    });
+    return { extra: extra, faltante: faltante };
   }
 
-  function escapeHtml(str) {
-    if (str === undefined || str === null) return '';
-    return String(str).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
-  }
-  function formatearFecha(iso) {
-    if (!iso) return '-';
-    const d = new Date(iso);
-    if (isNaN(d)) return iso;
-    return d.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  }
-
-  function listar() {
-    const callbackName = 'cb_' + Date.now();
-    window[callbackName] = function (data) {
-      items = data.registros || [];
-      renderGrid();
-      delete window[callbackName];
-      document.body.removeChild(script);
-    };
+  function jsonp(url, cb) {
+    const name = 'cb_' + Date.now();
+    window[name] = function (data) { cb(data); delete window[name]; document.body.removeChild(script); };
     const script = document.createElement('script');
-    script.src = APP_URL + '?accion=listar&tabla=' + TABLA + '&clave=' + APP_KEY + '&callback=' + callbackName;
+    script.src = url + (url.indexOf('?') === -1 ? '?' : '&') + 'callback=' + name;
     document.body.appendChild(script);
   }
 
-  function renderGrid() {
-    const grid = document.getElementById('pestel-grid');
-    grid.innerHTML = CATEGORIAS.map(function (cat) {
-      const propios = items.filter(function (x) { return x['Categoría PESTEL'] === cat; });
-      const lista = propios.length
-        ? propios.map(function (r) {
-            const impClass = r['Impacto'] === 'Positivo' ? 'impacto-pos' : (r['Impacto'] === 'Negativo' ? 'impacto-neg' : 'impacto-ind');
-            const fechaEdicion = r['modificado_fecha'] || r['creado_fecha'] || '';
-            return '<div class="p-item" onclick="editar(\'' + r.id + '\')">' +
-              '<strong>' + escapeHtml(r['Factor']) + '</strong>' +
-              '<span class="meta ' + impClass + '">' + (r['Plazo'] || '') + ' · ' + (r['Impacto'] || '') + '</span>' +
-              (r['Responsables de ejecución'] ? '<span class="meta">' + escapeHtml(r['Responsables de ejecución']) + '</span>' : '') +
-              (fechaEdicion ? '<span class="meta">Editado: ' + formatearFecha(fechaEdicion) + '</span>' : '') +
-              '</div>';
-          }).join('')
-        : '<div class="p-empty">Sin factores aún.</div>';
-      return '<div class="pestel-col"><h3>' + cat + '</h3>' + lista + '</div>';
-    }).join('');
-    // formatearFecha se define abajo
+  function listar() {
+    jsonp(APP_URL + '?accion=listar&tabla=' + TABLA + '&clave=' + APP_KEY, function (data) {
+      items = data.registros || [];
+      renderTabla(items);
+      renderVista();
+    });
   }
 
-  window.editar = function (id) {
+  function renderTabla(registros) {
+    const cont = document.getElementById('tabla-container');
+    if (!registros.length) { cont.innerHTML = '<div class="empty">Aún no hay factores PESTEL cargados.</div>'; return; }
+    let html = '<table><thead><tr><th>Categoría</th><th>Factor</th><th>Descripción</th><th>Impacto</th><th>Ámbito</th><th>Última edición</th><th></th></tr></thead><tbody>';
+    registros.forEach(function (r) {
+      const impClass = r['Impacto'] === 'Positivo' ? 'pos' : (r['Impacto'] === 'Negativo' ? 'neg' : 'ind');
+      const fechaEdicion = r['modificado_fecha'] || r['creado_fecha'] || '';
+      html += '<tr>' +
+        '<td><span class="tag">' + (r['Categoría PESTEL'] || '') + '</span></td>' +
+        '<td>' + escapeHtml(r['Factor']) + '</td>' +
+        '<td>' + escapeHtml(r['Descripción del factor']) + '</td>' +
+        '<td><span class="tag ' + impClass + '">' + (r['Impacto'] || '-') + '</span></td>' +
+        '<td class="meta-cell">' + (r['Ámbito'] || '') + (r['Obra'] ? '<br>' + escapeHtml(r['Obra']) : '') + '</td>' +
+        '<td class="meta-cell">' + formatearFecha(fechaEdicion) + '</td>' +
+        '<td><span class="edit-link" onclick="editarItem(\'' + r.id + '\')">Editar</span></td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    cont.innerHTML = html;
+  }
+
+  function renderVista() {
+    const cont = document.getElementById('vista-categorias');
+    let html = '';
+    CATEGORIAS.forEach(function (cat) {
+      const lista = items.filter(function (r) { return r['Categoría PESTEL'] === cat; });
+      html += '<h3 style="font-size:13px; font-family:\'JetBrains Mono\',monospace; text-transform:uppercase; color:#0A5568; margin:18px 0 8px;">' + cat + ' (' + lista.length + ')</h3>';
+      if (!lista.length) { html += '<p class="empty" style="padding:10px 0;">Sin factores en esta categoría.</p>'; return; }
+      html += '<table><thead><tr><th>Factor</th><th>Descripción</th><th>Plazo</th><th>Impacto</th></tr></thead><tbody>';
+      lista.forEach(function (r) {
+        html += '<tr><td>' + escapeHtml(r['Factor']) + '</td><td>' + escapeHtml(r['Descripción del factor']) + '</td><td>' + (r['Plazo'] || '-') + '</td><td>' + (r['Impacto'] || '-') + '</td></tr>';
+      });
+      html += '</tbody></table>';
+    });
+    cont.innerHTML = html;
+  }
+
+  window.editarItem = function (id) {
     const r = items.find(function (x) { return x.id === id; });
     if (!r) return;
     document.getElementById('f-id').value = r.id;
@@ -380,17 +310,18 @@
     document.getElementById('f-factor').value = r['Factor'] || '';
     document.getElementById('f-descripcion').value = r['Descripción del factor'] || '';
     document.getElementById('f-plazo').value = r['Plazo'] || '';
-    document.getElementById('f-impacto-tipo').value = r['Impacto'] || '';
+    document.getElementById('f-impacto').value = r['Impacto'] || '';
     document.getElementById('f-ambito').value = r['Ámbito'] || '';
     document.getElementById('f-obra').value = r['Obra'] || '';
     document.getElementById('f-prob').value = r['Probabilidad'] || '';
-    document.getElementById('f-consecuencia').value = r['Consecuencia'] || '';
+    document.getElementById('f-consec').value = r['Consecuencia'] || '';
     document.getElementById('f-monitorear').checked = r['Monitorear en Panel de Control'] === 'Sí';
     document.getElementById('f-responsables').value = r['Responsables de ejecución'] || '';
     formTitle.textContent = 'Editando factor PESTEL';
     btnCancelar.style.display = 'inline-block';
     document.getElementById('btn-eliminar').style.display = 'inline-block';
     aplicarReplicadoPrevio(r['Replicado_a']);
+    document.querySelector('.tab-btn[data-tab="carga"]').click();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -434,13 +365,13 @@
     }
     const id = document.getElementById('f-id').value;
     const p = document.getElementById('f-prob').value;
-    const c = document.getElementById('f-consecuencia').value;
+    const c = document.getElementById('f-consec').value;
     const registro = {
       'Categoría PESTEL': document.getElementById('f-categoria').value,
       'Factor': document.getElementById('f-factor').value,
       'Descripción del factor': document.getElementById('f-descripcion').value,
       'Plazo': document.getElementById('f-plazo').value,
-      'Impacto': document.getElementById('f-impacto-tipo').value,
+      'Impacto': document.getElementById('f-impacto').value,
       'Ámbito': document.getElementById('f-ambito').value,
       'Obra': document.getElementById('f-obra').value,
       'Probabilidad': p,
@@ -452,14 +383,23 @@
     if (id) registro.id = id;
 
     const replicarA = Array.from(document.querySelectorAll('.replicar-check:checked')).map(function (c) { return c.value; });
+    let replicarExtra = {};
+    if (!id && replicarA.length) {
+      const resultado = recolectarReplicarExtra();
+      if (resultado.faltante) {
+        setStatus('Selecciona la categoría/tipo/ámbito requerido para "' + resultado.faltante + '" antes de guardar — si no, el ítem quedará invisible en esa pantalla.', 'err');
+        return;
+      }
+      replicarExtra = resultado.extra;
+    }
     const payload = { tabla: TABLA, accion: id ? 'actualizar' : 'crear', registro: registro, usuario: USUARIO, clave: APP_KEY };
-    if (!id && replicarA.length) payload.replicar_a = replicarA;
+    if (!id && replicarA.length) {
+      payload.replicar_a = replicarA;
+      if (Object.keys(replicarExtra).length) payload.replicar_extra = replicarExtra;
+    }
 
     setStatus('Guardando...', '');
-    fetch(APP_URL, {
-      method: 'POST', headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
-    })
+    fetch(APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (data.error) { setStatus('Error: ' + data.error, 'err'); return; }
@@ -473,7 +413,7 @@
         document.getElementById('f-id').value = '';
         formTitle.textContent = 'Nuevo factor PESTEL';
         btnCancelar.style.display = 'none';
-    document.getElementById('btn-eliminar').style.display = 'none';
+        document.getElementById('btn-eliminar').style.display = 'none';
         aplicarReplicadoPrevio('');
         listar();
       })
@@ -481,7 +421,6 @@
   });
 
   listar();
-  cargarFodaParaImportar();
 </script>
 
 </body>

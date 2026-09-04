@@ -129,14 +129,14 @@
       <div id="replicar-bloque">
         <label style="margin-top:16px;">Replicar automáticamente a (opcional)</label>
         <div class="replicar-grid">
-          <label class="check-inline"><input type="checkbox" class="replicar-check" value="FODA"> FODA</label>
-          <label class="check-inline"><input type="checkbox" class="replicar-check" value="PESTEL"> PESTEL</label>
-          <label class="check-inline"><input type="checkbox" class="replicar-check" value="Balance_Scorecard"> Balance Scorecard</label>
-          <label class="check-inline"><input type="checkbox" class="replicar-check" value="Riesgos_Oportunidades"> Riesgos y Oportunidades</label>
+          <label class="check-inline"><input type="checkbox" class="replicar-check" value="FODA" data-extra="Categoría">FODA<select class="replicar-extra-select" data-for="FODA" style="display:none; width:auto; font-size:11px; padding:2px 5px; margin-left:2px;"><option value="">Categoría...</option><option value="Fortaleza">Fortaleza</option><option value="Debilidad">Debilidad</option><option value="Oportunidad">Oportunidad</option><option value="Amenaza">Amenaza</option></select></label>
+          <label class="check-inline"><input type="checkbox" class="replicar-check" value="PESTEL" data-extra="Categoría PESTEL">PESTEL<select class="replicar-extra-select" data-for="PESTEL" style="display:none; width:auto; font-size:11px; padding:2px 5px; margin-left:2px;"><option value="">Categoría PESTEL...</option><option value="Político">Político</option><option value="Económico">Económico</option><option value="Social">Social</option><option value="Tecnológico">Tecnológico</option><option value="Ecológico-Ambiental">Ecológico-Ambiental</option><option value="Legal">Legal</option></select></label>
+          <label class="check-inline"><input type="checkbox" class="replicar-check" value="Balance_Scorecard" data-extra="Ámbito">Balance Scorecard<select class="replicar-extra-select" data-for="Balance_Scorecard" style="display:none; width:auto; font-size:11px; padding:2px 5px; margin-left:2px;"><option value="">Ámbito...</option><option value="Financiero">Financiero</option><option value="Personas">Personas</option><option value="Procesos">Procesos</option><option value="Sociedad y Ambiente">Sociedad y Ambiente</option><option value="Clientes">Clientes</option></select></label>
+          <label class="check-inline"><input type="checkbox" class="replicar-check" value="Riesgos_Oportunidades" data-extra="Tipo">Riesgos y Oportunidades<select class="replicar-extra-select" data-for="Riesgos_Oportunidades" style="display:none; width:auto; font-size:11px; padding:2px 5px; margin-left:2px;"><option value="">Tipo...</option><option value="Riesgo">Riesgo</option><option value="Oportunidad">Oportunidad</option></select></label>
           <label class="check-inline"><input type="checkbox" class="replicar-check" value="Hallazgos"> Hallazgos</label>
           <label class="check-inline"><input type="checkbox" class="replicar-check" value="Compromisos_Medidas"> Compromisos y Medidas</label>
         </div>
-        <p class="sub" style="margin:4px 0 0;">Crea una copia en cada módulo marcado (descripción, responsables). Solo aplica al crear una parte interesada nueva.</p>
+        <p class="sub" style="margin:4px 0 0;">Crea una copia en cada módulo marcado (descripción, responsables). Solo aplica al crear una parte interesada nueva. Algunos módulos piden elegir una categoría — sin ella, el ítem quedaría creado pero invisible en esa pantalla.</p>
       </div>
 
       <div class="actions">
@@ -229,6 +229,34 @@
       if (yaUsados.indexOf(chk.value) !== -1) { chk.checked = true; chk.disabled = true; }
       else { chk.checked = false; chk.disabled = false; }
     });
+    document.querySelectorAll('.replicar-extra-select').forEach(function (sel) {
+      sel.style.display = 'none';
+      sel.value = '';
+    });
+  }
+
+  // ---- Selectores de categoría/tipo/ámbito que exigen FODA, PESTEL,
+  // Riesgos y Oportunidades y Balance Scorecard para que el ítem replicado
+  // no quede invisible en la vista agrupada de esas pantallas ----
+  document.querySelectorAll('.replicar-check[data-extra]').forEach(function (chk) {
+    chk.addEventListener('change', function () {
+      const sel = document.querySelector('.replicar-extra-select[data-for="' + chk.value + '"]');
+      if (!sel) return;
+      sel.style.display = chk.checked ? 'inline-block' : 'none';
+      if (!chk.checked) sel.value = '';
+    });
+  });
+  function recolectarReplicarExtra() {
+    const extra = {};
+    let faltante = null;
+    document.querySelectorAll('.replicar-check[data-extra]:checked').forEach(function (chk) {
+      const sel = document.querySelector('.replicar-extra-select[data-for="' + chk.value + '"]');
+      const val = sel ? sel.value : '';
+      if (!val) { faltante = chk.value; return; }
+      extra[chk.value] = {};
+      extra[chk.value][chk.dataset.extra] = val;
+    });
+    return { extra: extra, faltante: faltante };
   }
 
   function escapeHtml(str) {
@@ -308,6 +336,15 @@
     if (id) registro.id = id;
 
     const replicarA = Array.from(document.querySelectorAll('.replicar-check:checked')).map(function (c) { return c.value; });
+    let replicarExtra = {};
+    if (!id && replicarA.length) {
+      const resultado = recolectarReplicarExtra();
+      if (resultado.faltante) {
+        setStatus('Selecciona la categoría/tipo/ámbito requerido para "' + resultado.faltante + '" antes de guardar — si no, el ítem quedará invisible en esa pantalla.', 'err');
+        return;
+      }
+      replicarExtra = resultado.extra;
+    }
     const payload = {
       tabla: TABLA,
       accion: id ? 'actualizar' : 'crear',
@@ -315,7 +352,10 @@
       usuario: USUARIO,
       clave: APP_KEY
     };
-    if (!id && replicarA.length) payload.replicar_a = replicarA;
+    if (!id && replicarA.length) {
+      payload.replicar_a = replicarA;
+      if (Object.keys(replicarExtra).length) payload.replicar_extra = replicarExtra;
+    }
 
     setStatus('Guardando...', '');
     fetch(APP_URL, {

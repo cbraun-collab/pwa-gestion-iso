@@ -21,6 +21,8 @@
   .back:hover{opacity:1;}
   h1{margin:0; font-size:18px; font-weight:600;}
   .code-pill{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:rgba(255,255,255,.12); padding:3px 9px; border-radius:999px; margin-left:auto;}
+  .nav-link{color:#fff; opacity:.85; text-decoration:none; font-size:12.5px; border:1px solid rgba(255,255,255,.3); padding:5px 10px; border-radius:999px; margin-left:8px;}
+  .nav-link:hover{opacity:1; background:rgba(255,255,255,.08);}
   main{max-width:1040px; margin:0 auto; padding:28px 24px 64px;}
 
   .kpi-row{display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:24px;}
@@ -56,6 +58,7 @@
   .updated-at{font-size:11px; color:#8A9A9E; font-family:'JetBrains Mono',monospace;}
 
   .aviso-correo{background:#EAF1F1; border:1px solid #C9DEDE; border-radius:10px; padding:12px 16px; font-size:12px; color:#0A5568; margin-bottom:22px;}
+  .aviso-correo a{color:#0A5568; font-weight:600;}
 </style>
 </head>
 <body>
@@ -66,6 +69,7 @@
     <a class="back" href="index.html">&larr; Inicio</a>
     <h1>Panel de Control</h1>
     <span class="code-pill mono">Vista consolidada</span>
+    <a class="nav-link" href="monitoreo-mensual.html">Ver grilla mensual →</a>
   </div>
 </header>
 
@@ -77,7 +81,7 @@
   </div>
 
   <div class="aviso-correo">
-    Este mismo resumen se envía automáticamente cada lunes a <strong>cbraun@senercom.cl</strong> y <strong>contacto@senercom.cl</strong> (configurado en Apps Script).
+    Este mismo resumen se envía automáticamente todos los meses a <strong>cbraun@senercom.cl</strong> y <strong>contacto@senercom.cl</strong> (activador configurado en Apps Script) — incluyendo también los puntos marcados "no" en el Panel de Monitoreo (FOR-SGC-004), que se refresca solo antes de cada envío. Para ver ese mismo Panel de Monitoreo en formato de grilla mes a mes, entra a <a href="monitoreo-mensual.html">Monitoreo Mensual</a>.
   </div>
 
   <div class="kpi-row">
