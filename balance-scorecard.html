@@ -52,6 +52,7 @@
   .check-inline{display:flex; align-items:center; gap:7px; font-size:12.8px; font-weight:400; color:#3F4E52; margin:0;}
   .check-inline input{width:auto; margin:0;}
 </style>
+<script src="auth.js"></script>
 </head>
 <body>
 
@@ -176,7 +177,7 @@
 
 <script>
   const APP_URL = 'https://script.google.com/macros/s/AKfycbzCquDf6sVRaGePNemoq1CMlZN9wdivpRmCw7omiSkgHiIcWIcf8jhC5t9Lc01UhMt7hw/exec';
-  const APP_KEY = 'senercom-sgi-7x9K2m';
+  const APP_KEY = window.ISO_TOKEN || ''; // sesión de Google (auth.js), ya no una clave fija
   const TABLA = 'Balance_Scorecard';
   const USUARIO = 'Carlos Braun';
   const AMBITOS = ['Financiero', 'Personas', 'Procesos', 'Sociedad y Ambiente', 'Clientes'];

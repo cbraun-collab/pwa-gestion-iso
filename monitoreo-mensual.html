@@ -50,6 +50,7 @@
   .filtros{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
   .filtros select{padding:6px 10px; border-radius:8px; border:1px solid var(--line); font-family:'Space Grotesk',sans-serif; font-size:12.5px; background:#fff;}
 </style>
+<script src="auth.js"></script>
 </head>
 <body>
 
@@ -90,7 +91,7 @@
 
 <script>
   const APP_URL = 'https://script.google.com/macros/s/AKfycbzCquDf6sVRaGePNemoq1CMlZN9wdivpRmCw7omiSkgHiIcWIcf8jhC5t9Lc01UhMt7hw/exec';
-  const APP_KEY = 'senercom-sgi-7x9K2m';
+  const APP_KEY = window.ISO_TOKEN || ''; // sesión de Google (auth.js), ya no una clave fija
   const MESES_ORDEN = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sept', 'oct', 'nov', 'dic'];
 
   function escapeHtml(str) {

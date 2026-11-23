@@ -37,6 +37,7 @@
   .empty{padding:24px; text-align:center; color:#8A9A9E; font-size:13px;}
   .updated-at{font-size:11px; color:#8A9A9E; font-family:'JetBrains Mono',monospace; margin-bottom:4px;}
 </style>
+<script src="auth.js"></script>
 </head>
 <body>
 
@@ -65,7 +66,7 @@
 
 <script>
   const APP_URL = 'https://script.google.com/macros/s/AKfycbzCquDf6sVRaGePNemoq1CMlZN9wdivpRmCw7omiSkgHiIcWIcf8jhC5t9Lc01UhMt7hw/exec';
-  const APP_KEY = 'senercom-sgi-7x9K2m';
+  const APP_KEY = window.ISO_TOKEN || ''; // sesión de Google (auth.js), ya no una clave fija
   const TABLA = 'Estado_Obras';
 
   function clp(n) { return '$' + Math.round(Number(n) || 0).toLocaleString('es-CL'); }

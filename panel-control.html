@@ -60,6 +60,7 @@
   .aviso-correo{background:#EAF1F1; border:1px solid #C9DEDE; border-radius:10px; padding:12px 16px; font-size:12px; color:#0A5568; margin-bottom:22px;}
   .aviso-correo a{color:#0A5568; font-weight:600;}
 </style>
+<script src="auth.js"></script>
 </head>
 <body>
 
@@ -126,7 +127,7 @@
 
 <script>
   const APP_URL = 'https://script.google.com/macros/s/AKfycbzCquDf6sVRaGePNemoq1CMlZN9wdivpRmCw7omiSkgHiIcWIcf8jhC5t9Lc01UhMt7hw/exec';
-  const APP_KEY = 'senercom-sgi-7x9K2m';
+  const APP_KEY = window.ISO_TOKEN || ''; // sesión de Google (auth.js), ya no una clave fija
 
   function escapeHtml(str) {
     if (str === undefined || str === null) return '';
